@@ -5,7 +5,7 @@ class map {
         this.matrix = [];
         const default_array = []
         for (let index = 0; index < length; index++) {
-            default_array.push('0');
+            default_array.push(0);
         }
         for (let index = 0; index < breadth; index++) {
             this.matrix.push(default_array);

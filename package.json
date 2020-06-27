@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/grtcoder/Microsoft_mars_project/issues"
   },
-  "homepage": "https://github.com/grtcoder/Microsoft_mars_project#readme"
+  "homepage": "https://github.com/grtcoder/Microsoft_mars_project#readme",
+  "dependencies": {
+    "collections": "^5.1.11"
+  }
 }
