@@ -21,6 +21,6 @@ class map {
         }
     }
 };
-var x = new map(50, 50);
-x.print_map();
+// var x = new map(50, 50);
+// x.print_map();
 exports.map = map;

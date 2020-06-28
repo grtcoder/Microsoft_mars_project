@@ -9,11 +9,14 @@ class point{
         type 3 :- medium rough patch
         type 4 :- blockage
     */ 
-    constructor(x,y,type){
+    constructor(x,y){
         this.x=x;
         this.y=y;
-        this.type=type;
     }
 };
+
+class node{
+    
+}
 //Setting up parameters for export
 exports.point=point;
