@@ -8,6 +8,8 @@ class point{
         type 2 :- slightly rough patch
         type 3 :- medium rough patch
         type 4 :- blockage
+        type 5 :- start
+        type 6 :- end
     */ 
     constructor(x,y){
         this.x=x;
@@ -16,7 +18,7 @@ class point{
 };
 
 class node{
-    
+
 }
 //Setting up parameters for export
 exports.point=point;

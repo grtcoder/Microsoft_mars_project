@@ -29,14 +29,23 @@ class A_star_solver {
     hval(pt) {//add heuristics corresponding to each distance metric
         return 0;
     }
-    path() {
-        // var iter = end;
-        // while (this.parent[iter] != iter) {
-        //     console.log(iter);
-        //     // console.log(parent[iter]);
-        //     iter = this.parent[iter];
-        // }
+    ntc(num){
+        var y=num%graph.length;
+        var x=Math.floor(num/graph.length);
+        return [x,y];
     }
+    ctn(x,y){
+        return (graph.length*x)+y;
+    }
+    // direction()
+    // path() {
+    //     // var iter = end;
+    //     // while (this.parent[iter] != iter) {
+    //     //     console.log(iter);
+    //     //     // console.log(parent[iter]);
+    //     //     iter = this.parent[iter];
+    //     // }
+    // }
     findpath() {
         var visited = new map.map(graph.length, graph.breadth);
         var parent = {};
@@ -68,7 +77,7 @@ class A_star_solver {
                 }
             }
         }
-        console.log(visited.print_map());
+        visited.print_map();
     }
 };
 var graph = new map.map(10, 10);
