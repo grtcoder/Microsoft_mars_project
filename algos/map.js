@@ -18,7 +18,7 @@ class map {
     print_map() {
         for (let i = 0; i < this.breadth; i++) {
             for (let j = 0; j < this.length; j++) {
-                process.stdout.write(this.matrix[i][j]);
+                process.stdout.write(this.matrix[i][j]+' ');
             }
             process.stdout.write('\n');
         }
