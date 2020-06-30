@@ -1,6 +1,7 @@
 const point = require('./point');
 const map = require('./map');
 const heap = require('collections/heap');
+const distance = require('./helper/distance_metrics.js');
 class A_star_node {
     constructor(x, y, f) {
         this.x = x;
@@ -9,11 +10,12 @@ class A_star_node {
     }
 };
 class A_star_solver {
-    constructor(graph, start, end) {
+    constructor(graph, start, end, h) {
         this.graph = graph;
         this.start = start;
         this.end = end;
         this.parent = {};
+        this.h = h;
     }
     isvalid(pt, value) {
         if (pt.x >= 0 && pt.y >= 0 && pt.x < graph.length && pt.y < graph.breadth && graph.matrix[pt.x][pt.y] != '4') {
@@ -21,11 +23,28 @@ class A_star_solver {
         }
         return false;
     }
-    fval(pt) {
-        return 1 + hval(pt, end);
+    fval(a, b) {
+        return this.gval(a, b) + this.hval(b, end);
     }
-    hval(pt) {//add heuristics corresponding to each distance metric
-        return 0;
+    hval(a, b) {
+        if (this.h == 0) {//no heuristic
+            return 0;
+        }
+        else if (this.h == 1) {
+            return distance.manhattan(a, b);
+        }
+        else if (this.h == 2) {
+            return distance.euclidean(a, b);
+        }
+        else if (this.h == 3) {
+            return distance.octile(a, b);
+        }
+        else if (this.h == 4) {
+            return distance.chebyshev(a, b);
+        }
+    }
+    gval(a, b) {//add support for variable distances
+        return 1;
     }
     ntc(num) {
         var y = num % graph.length;
@@ -56,35 +75,37 @@ class A_star_solver {
         openlist.push(start);
         while (openlist.length != 0) {
             var curr = openlist.pop();
-            var dist = curr.f + 1;
-            // console.log(curr);
+            console.log(curr);
             visited.matrix[curr.x][curr.y] = '1';
             if (end.x == curr.x && end.y == curr.y) {
                 this.path();
-                graph.print_map();
-                visited.print_map();
+                // graph.print_map();
+                // visited.print_map();
                 // console.log(this.parent);
                 break;
             }
             for (let i = 0; i < possiblen.length; i++) {
-                var pt = new A_star_node(curr.x + possiblen[i][0], curr.y + possiblen[i][1], dist);
+                var pt = new A_star_node(curr.x + possiblen[i][0], curr.y + possiblen[i][1], 0);
+                pt.f=curr.f+this.fval(curr,pt);
                 if (this.isvalid(pt) && visited.matrix[pt.x][pt.y] == '0') {
                     this.parent[this.ctn(pt)] = this.ctn(curr);
                     openlist.push(pt);
                 }
             }
         }
+        // console.log(this.h);
     }
 };
 var graph = new map.map(10, 10);
 var start = new A_star_node(0, 0);
 var end = new A_star_node(5, 5);
-graph.matrix[1][0] = '4';
-graph.matrix[0][2] = '4';
-graph.matrix[3][0] = '4';
-graph.matrix[1][2] = '4';
+// graph.matrix[1][0] = '4';
+// graph.matrix[0][2] = '4';
+// graph.matrix[3][0] = '4';
+// graph.matrix[1][2] = '4';
 // graph.matrix[2][1] = '4';
 // graph.print_map();
-var solver = new A_star_solver(graph, start, end);
+var solver = new A_star_solver(graph, start, end, 3);
 solver.findpath();
+solver.graph.print_map();
 
