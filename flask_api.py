@@ -6,13 +6,13 @@ app=Flask(__name__)
 @app.route('/',methods=['GET','POST'])
 def home():
     if(request.method == 'GET'):
-        data="hello rit"
+        data="I will return you whatever harshit want"
         return jsonify({'data':data})
 
 
-@app.route('/harshit/<int:num>',methods=['GET'])
+@app.route('/processing/<int:num>',methods=['GET'])
 def disp(num):
-    return jsonify({'data':num**2})
+    return jsonify({'data':num**4})
 
 
 
