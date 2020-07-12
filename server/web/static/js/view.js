@@ -121,7 +121,7 @@ var View = {
             this.startNode = this.paper.rect(
                 coord[0],
                 coord[1],
-                this.nodeSize,
+                this.nodeSize,//div setting color to attribuite in start node
                 this.nodeSize
             ).attr(this.nodeStyle.normal)
              .animate(this.nodeStyle.start, 1000);
@@ -133,7 +133,7 @@ var View = {
         var coord = this.toPageCoordinate(gridX, gridY);
         if (!this.endNode) {
             this.endNode = this.paper.rect(
-                coord[0],
+                coord[0],//div segments are taken as continuous chunks
                 coord[1],
                 this.nodeSize,
                 this.nodeSize

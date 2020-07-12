@@ -10,83 +10,83 @@ var Controller = StateMachine.create({
         {
             name: 'init',
             from: 'none',
-            to:   'ready'
+            to: 'ready'
         }
         ,
         {
             name: 'search',
             from: 'starting',
-            to:   'searching'
+            to: 'searching'
         },
         {
             name: 'pause',
             from: 'searching',
-            to:   'paused'
+            to: 'paused'
         },
         {
             name: 'finish',
             from: 'searching',
-            to:   'finished'
+            to: 'finished'
         },
         {
             name: 'resume',
             from: 'paused',
-            to:   'searching'
+            to: 'searching'
         },
         {
             name: 'cancel',
             from: 'paused',
-            to:   'ready'
+            to: 'ready'
         },
         {
             name: 'modify',
             from: 'finished',
-            to:   'modified'
+            to: 'modified'
         },
         {
             name: 'reset',
             from: '*',
-            to:   'ready'
+            to: 'ready'
         },
         {
             name: 'clear',
             from: ['finished', 'modified'],
-            to:   'ready'
+            to: 'ready'
         },
         {
             name: 'start',
             from: ['ready', 'modified', 'restarting'],
-            to:   'starting'
+            to: 'starting'
         },
         {
             name: 'restart',
             from: ['searching', 'finished'],
-            to:   'restarting'
+            to: 'restarting'
         },
         {
             name: 'dragStart',
             from: ['ready', 'finished'],
-            to:   'draggingStart'
+            to: 'draggingStart'
         },
         {
             name: 'dragEnd',
             from: ['ready', 'finished'],
-            to:   'draggingEnd'
+            to: 'draggingEnd'
         },
         {
             name: 'drawWall',
             from: ['ready', 'finished'],
-            to:   'drawingWall'
+            to: 'drawingWall'
         },
         {
             name: 'eraseWall',
             from: ['ready', 'finished'],
-            to:   'erasingWall'
+            to: 'erasingWall'
         },
         {
             name: 'rest',
             from: ['draggingStart', 'draggingEnd', 'drawingWall', 'erasingWall'],
-            to  : 'ready'
+            to: 'ready'
         },
     ],
 });
@@ -98,7 +98,7 @@ $.extend(Controller, {
     /**
      * Asynchronous transition from `none` state to `ready` state.
      */
-    onleavenone: function() {
+    onleavenone: function () {
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
@@ -108,7 +108,7 @@ $.extend(Controller, {
             numCols: numCols,
             numRows: numRows
         });
-        View.generateGrid(function() {
+        View.generateGrid(function () {
             Controller.setDefaultStartEndPos();
             Controller.bindEvents();
             Controller.transition(); // transit to the next state (ready)
@@ -121,20 +121,22 @@ $.extend(Controller, {
         return StateMachine.ASYNC;
         // => ready
     },
-    ondrawWall: function(event, from, to, gridX, gridY) {
+    ondrawWall: function (event, from, to, gridX, gridY) {
         this.setWalkableAt(gridX, gridY, false);
         // => drawingWall
     },
-    oneraseWall: function(event, from, to, gridX, gridY) {
+    oneraseWall: function (event, from, to, gridX, gridY) {
         this.setWalkableAt(gridX, gridY, true);
         // => erasingWall
     },
-    onsearch: function(event, from, to) {
+    onsearch: function (event, from, to) {
         var grid,
             timeStart, timeEnd,
-        
-            finder = Panel.getFinder();
 
+            temp = Panel.getFinder();
+        finder = temp[0];
+        query = temp[1];
+        this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
         this.path = finder.findPath(
@@ -143,54 +145,53 @@ $.extend(Controller, {
         this.operationCount = this.operations.length;
         timeEnd = window.performance ? performance.now() : Date.now();
         this.timeSpent = (timeEnd - timeStart).toFixed(4);
-
         this.loop();
         // => searching
     },
-    onrestart: function() {
+    onrestart: function () {
         // When clearing the colorized nodes, there may be
         // nodes still animating, which is an asynchronous procedure.
         // Therefore, we have to defer the `abort` routine to make sure
         // that all the animations are done by the time we clear the colors.
         // The same reason applies for the `onreset` event handler.
-        setTimeout(function() {
+        setTimeout(function () {
             Controller.clearOperations();
             Controller.clearFootprints();
             Controller.start();
         }, View.nodeColorizeEffect.duration * 1.2);
         // => restarting
     },
-    onpause: function(event, from, to) {
+    onpause: function (event, from, to) {
         // => paused
     },
-    onresume: function(event, from, to) {
+    onresume: function (event, from, to) {
         this.loop();
         // => searching
     },
-    oncancel: function(event, from, to) {
+    oncancel: function (event, from, to) {
         this.clearOperations();
         this.clearFootprints();
         // => ready
     },
-    onfinish: function(event, from, to) {
+    onfinish: function (event, from, to) {
         View.showStats({
             pathLength: PF.Util.pathLength(this.path),
-            timeSpent:  this.timeSpent,
+            timeSpent: this.timeSpent,
             operationCount: this.operationCount,
         });
         View.drawPath(this.path);
         // => finished
     },
-    onclear: function(event, from, to) {
+    onclear: function (event, from, to) {
         this.clearOperations();
         this.clearFootprints();
         // => ready
     },
-    onmodify: function(event, from, to) {
+    onmodify: function (event, from, to) {
         // => modified
     },
-    onreset: function(event, from, to) {
-        setTimeout(function() {
+    onreset: function (event, from, to) {
+        setTimeout(function () {
             Controller.clearOperations();
             Controller.clearAll();
             Controller.buildNewGrid();
@@ -202,7 +203,7 @@ $.extend(Controller, {
      * The following functions are called on entering states.
      */
 
-    onready: function() {
+    onready: function () {
         console.log('=> ready');
         this.setButtonStates({
             id: 1,
@@ -221,7 +222,7 @@ $.extend(Controller, {
         });
         // => [starting, draggingStart, draggingEnd, drawingStart, drawingEnd]
     },
-    onstarting: function(event, from, to) {
+    onstarting: function (event, from, to) {
         console.log('=> starting');
         // Clears any existing search progress
         this.clearFootprints();
@@ -232,7 +233,7 @@ $.extend(Controller, {
         this.search();
         // => searching
     },
-    onsearching: function() {
+    onsearching: function () {
         console.log('=> searching');
         this.setButtonStates({
             id: 1,
@@ -247,7 +248,7 @@ $.extend(Controller, {
         });
         // => [paused, finished]
     },
-    onpaused: function() {
+    onpaused: function () {
         console.log('=> paused');
         this.setButtonStates({
             id: 1,
@@ -262,7 +263,7 @@ $.extend(Controller, {
         });
         // => [searching, ready]
     },
-    onfinished: function() {
+    onfinished: function () {
         console.log('=> finished');
         this.setButtonStates({
             id: 1,
@@ -276,7 +277,7 @@ $.extend(Controller, {
             callback: $.proxy(this.clear, this),
         });
     },
-    onmodified: function() {
+    onmodified: function () {
         console.log('=> modified');
         this.setButtonStates({
             id: 1,
@@ -295,7 +296,7 @@ $.extend(Controller, {
      * Define setters and getters of PF.Node, then we can get the operations
      * of the pathfinding.
      */
-    hookPathFinding: function() {
+    hookPathFinding: function () {
 
         PF.Node.prototype = {
             get opened() {
@@ -338,13 +339,13 @@ $.extend(Controller, {
 
         this.operations = [];
     },
-    bindEvents: function() {
+    bindEvents: function () {
         $('#draw_area').mousedown($.proxy(this.mousedown, this));
         $(window)
             .mousemove($.proxy(this.mousemove, this))
             .mouseup($.proxy(this.mouseup, this));
     },
-    loop: function() {
+    loop: function () {
         var interval = 1000 / this.operationsPerSecond;
         (function loop() {
             if (!Controller.is('searching')) {
@@ -354,7 +355,7 @@ $.extend(Controller, {
             setTimeout(loop, interval);
         })();
     },
-    step: function() {
+    step: function () {
         var operations = this.operations,
             op, isSupported;
 
@@ -369,25 +370,25 @@ $.extend(Controller, {
 
         View.setAttributeAt(op.x, op.y, op.attr, op.value);
     },
-    clearOperations: function() {
+    clearOperations: function () {
         this.operations = [];
     },
-    clearFootprints: function() {
+    clearFootprints: function () {
         View.clearFootprints();
         View.clearPath();
     },
-    clearAll: function() {
+    clearAll: function () {
         this.clearFootprints();
         View.clearBlockedNodes();
     },
-    buildNewGrid: function() {
+    buildNewGrid: function () {
         this.grid = new PF.Grid(this.gridSize[0], this.gridSize[1]);
     },
     mousedown: function (event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
             gridX = coord[0],
             gridY = coord[1],
-            grid  = this.grid;
+            grid = this.grid;
 
         if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
             this.dragStart();
@@ -405,7 +406,7 @@ $.extend(Controller, {
             this.eraseWall(gridX, gridY);
         }
     },
-    mousemove: function(event) {
+    mousemove: function (event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
             grid = this.grid,
             gridX = coord[0],
@@ -416,31 +417,31 @@ $.extend(Controller, {
         }
 
         switch (this.current) {
-        case 'draggingStart':
-            if (grid.isWalkableAt(gridX, gridY)) {
-                this.setStartPos(gridX, gridY);
-            }
-            break;
-        case 'draggingEnd':
-            if (grid.isWalkableAt(gridX, gridY)) {
-                this.setEndPos(gridX, gridY);
-            }
-            break;
-        case 'drawingWall':
-            this.setWalkableAt(gridX, gridY, false);
-            break;
-        case 'erasingWall':
-            this.setWalkableAt(gridX, gridY, true);
-            break;
+            case 'draggingStart':
+                if (grid.isWalkableAt(gridX, gridY)) {
+                    this.setStartPos(gridX, gridY);
+                }
+                break;
+            case 'draggingEnd':
+                if (grid.isWalkableAt(gridX, gridY)) {
+                    this.setEndPos(gridX, gridY);
+                }
+                break;
+            case 'drawingWall':
+                this.setWalkableAt(gridX, gridY, false);
+                break;
+            case 'erasingWall':
+                this.setWalkableAt(gridX, gridY, true);
+                break;
         }
     },
-    mouseup: function(event) {
+    mouseup: function (event) {
         if (Controller.can('rest')) {
             Controller.rest();
         }
     },
-    setButtonStates: function() {
-        $.each(arguments, function(i, opt) {
+    setButtonStates: function () {
+        $.each(arguments, function (i, opt) {
             var $button = Controller.$buttons.eq(opt.id - 1);
             if (opt.text) {
                 $button.text(opt.text);
@@ -459,19 +460,19 @@ $.extend(Controller, {
             }
         });
     },
-//     /**
-//      * When initializing, this method will be called to set the positions
-//      * of start node and end node.
-//      * It will detect user's display size, and compute the best positions.
-//      */
-    setDefaultStartEndPos: function() {
+    //     /**
+    //      * When initializing, this method will be called to set the positions
+    //      * of start node and end node.
+    //      * It will detect user's display size, and compute the best positions.
+    //      */
+    setDefaultStartEndPos: function () {
         var width, height,
             marginRight, availWidth,
             centerX, centerY,
             endX, endY,
             nodeSize = View.nodeSize;
 
-        width  = $(window).width();
+        width = $(window).width();
         height = $(window).height();
 
         marginRight = $('#algorithm_panel').width();
@@ -483,27 +484,42 @@ $.extend(Controller, {
         this.setStartPos(centerX - 5, centerY);
         this.setEndPos(centerX + 5, centerY);
     },
-    setStartPos: function(gridX, gridY) {
+    setStartPos: function (gridX, gridY) {
         this.startX = gridX;
         this.startY = gridY;
         View.setStartPos(gridX, gridY);
     },
-    setEndPos: function(gridX, gridY) {
+    setEndPos: function (gridX, gridY) {
         this.endX = gridX;
         this.endY = gridY;
         View.setEndPos(gridX, gridY);
     },
-    setWalkableAt: function(gridX, gridY, walkable) {
+    setWalkableAt: function (gridX, gridY, walkable) {
         this.grid.setWalkableAt(gridX, gridY, walkable);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
     },
-    isStartPos: function(gridX, gridY) {
+    isStartPos: function (gridX, gridY) {
         return gridX === this.startX && gridY === this.startY;
     },
-    isEndPos: function(gridX, gridY) {
+    isEndPos: function (gridX, gridY) {
         return gridX === this.endX && gridY === this.endY;
     },
-    isStartOrEndPos: function(gridX, gridY) {
+    isStartOrEndPos: function (gridX, gridY) {
         return this.isStartPos(gridX, gridY) || this.isEndPos(gridX, gridY);
     },
+
+    sendsamplerequest: async function (qdata) {
+        $.ajax({
+            url: 'http://127.0.0.1:8000/api/test/',
+            type: 'post',
+            data: qdata,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.info(data);
+            }
+        });
+    }
 });
