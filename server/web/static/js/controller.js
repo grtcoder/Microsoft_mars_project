@@ -136,6 +136,7 @@ $.extend(Controller, {
             temp = Panel.getFinder();
         finder = temp[0];
         query = temp[1];
+        query['grid']=this.grid;
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();

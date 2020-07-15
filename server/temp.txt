@@ -1,0 +1,11 @@
+int d=0;
+void inorder(){
+    d++;
+    left();
+    d--;
+    if(arr[d]==INVALID)
+        arr[d]=node;
+    d++;
+    right();
+    d--;
+}
