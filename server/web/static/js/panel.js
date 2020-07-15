@@ -243,7 +243,6 @@ var Panel = {
                     heuristic: PF.Heuristic[heuristic],
                     weight: weight
                 });
-
                 break;
         }
         return [finder,query];

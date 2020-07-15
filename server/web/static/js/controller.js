@@ -136,7 +136,8 @@ $.extend(Controller, {
             temp = Panel.getFinder();
         finder = temp[0];
         query = temp[1];
-        query['grid']=this.grid;
+        // query['grid']=this.grid;
+        console.log(String(this.grid));
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone();
@@ -508,15 +509,11 @@ $.extend(Controller, {
     isStartOrEndPos: function (gridX, gridY) {
         return this.isStartPos(gridX, gridY) || this.isEndPos(gridX, gridY);
     },
-
-    sendsamplerequest: async function (qdata) {
+    sendsamplerequest: function (qdata) {
         $.ajax({
             url: 'http://127.0.0.1:8000/api/test/',
             type: 'post',
             data: qdata,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
             dataType: 'json',
             success: function (data) {
                 console.info(data);
