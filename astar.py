@@ -30,6 +30,15 @@ def draw_grid(map, width, height, spacing=2, **kwargs):
             print('%%-%ds' % spacing % draw_tile(map, (x, y), kwargs), end='')
         print()
 
+
+
+
+
+
+
+
+
+
 # If diagonal movements are allowed , than use any of the following two distances
 
 def distance_octile(node1, node2):
@@ -55,6 +64,28 @@ def distance_euclidean(node1, node2):
     dy = abs(node1.position[0] - node2.position[1])
     return D * math.sqrt(dx * dx + dy * dy)
 
+# Manhattan distance to be used when diagonal distance not allowed
+
+def distance_manhattan(node1, node2):
+    dx = abs(node1.position[0] - node2.position[0])
+    dy = abs(node1.position[0] - node2.position[1])
+    return dx + dy
+
+# But we are going to use any of the heuristic function for either case 
+# when diagonal is allowed and is not allowed
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -77,7 +108,7 @@ def draw_tile(map, position, kwargs):
     return value 
 
 # A* search
-def astar_search(map, start, end):
+def astar_search(map, start, end, distance_function, allowed_diagonal, weight):
     
     # Create lists for open nodes and closed nodes
     open = []
@@ -86,6 +117,8 @@ def astar_search(map, start, end):
     # Create a start node and an goal node
     start_node = Node(start, None)
     goal_node = Node(end, None)
+
+    green_nodes = []
 
     # Add the start node
     open.append(start_node)
@@ -110,15 +143,19 @@ def astar_search(map, start, end):
                 current_node = current_node.parent
             #path.append(start) 
             # Return reversed path
-            return path[::-1]
+            return path[::-1], green_nodes, closed
 
         # Unzip the current node position
         (x, y) = current_node.position
 
         # Get neighbors
-        neighbors = [(x-1, y), (x+1, y), (x, y-1), (x, y+1), (x+1, y+1), (x-1, y-1), (x-1, y+1), (x+1, y-1)]
+        if(allowed_diagonal == True):
+            neighbors = [(x-1, y), (x+1, y), (x, y-1), (x, y+1), (x+1, y+1), (x-1, y-1), (x-1, y+1), (x+1, y-1)]
+        else:
+            neighbors =  [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
 
         # Loop neighbors
+        new_green_nodes = []
         for next in neighbors:
 
             # Get value from map
@@ -136,16 +173,37 @@ def astar_search(map, start, end):
                 continue
 
         
-            neighbor.g = distance_chebyshev(neighbor, current_node)
-            neighbor.h = distance_chebyshev(neighbor, goal_node)
-            neighbor.f = neighbor.g + neighbor.h
+            if(distance_function == "chebyshev"):
+                neighbor.g = distance_chebyshev(neighbor, current_node)
+                neighbor.h = distance_chebyshev(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
+
+            if(distance_function == "euclidean"):
+                neighbor.g = distance_euclidean(neighbor, current_node)
+                neighbor.h = distance_euclidean(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
+
+            if(distance_function == "manhattan"):
+                neighbor.g = distance_manhattan(neighbor, current_node)
+                neighbor.h = distance_manhattan(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
+
+            if(distance_function == "octile"):
+                neighbor.g = distance_octile(neighbor, current_node)
+                neighbor.h = distance_octile(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
+
+            
 
             # Check if neighbor is in open list and if it has a lower f value
             if(add_to_open(open, neighbor) == True):
                 open.append(neighbor)
+                new_green_nodes.append(neighbor)
+        
+        green_nodes.append(new_green_nodes)
 
     # Return None, no path is found
-    return None
+    return None, new_green_nodes, closed
 
 # Check if a neighbor should be added to open list
 def add_to_open(open, neighbor):
@@ -194,9 +252,11 @@ def main():
 
     # Close the file pointer
     fp.close()
-
+    distance_function = "manhattan"
+    weight = 1
+    allowed_diagonal = False
     # Find the closest path from start(@) to end($)
-    path = astar_search(map, start, end)
+    path = astar_search(map, start, end, distance_function, allowed_diagonal, weight)
     print()
     print(path)
     print()
@@ -204,6 +264,3 @@ def main():
     print()
     print('Steps to goal: {0}'.format(len(path)))
     print()
-
-# Tell python to run main method
-if __name__ == "__main__": main()

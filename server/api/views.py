@@ -7,5 +7,5 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
 # Create your views here.
 @api_view(('GET',))
 def test(request):
-    print(request['a'])
+    print(request.GET)
     return Response({})
