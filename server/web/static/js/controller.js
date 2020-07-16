@@ -102,7 +102,7 @@ $.extend(Controller, {
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
-        this.grid = new PF.Grid(numCols, numRows);
+        this.grid = new PF.Grid(numCols, numRows);//div grid declaration
 
         View.init({
             numCols: numCols,
@@ -136,11 +136,12 @@ $.extend(Controller, {
             temp = Panel.getFinder();
         finder = temp[0];
         query = temp[1];
-        // query['grid']=this.grid;
-        console.log(String(this.grid));
+        query['gridsize']=this.gridSize;
+        // query['grid']=this.grid.nodes;
+        // console.log(this.grid.nodes);
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
-        grid = this.grid.clone();
+        grid = this.grid.clone(); //div making a clone of grid
         this.path = finder.findPath(
             this.startX, this.startY, this.endX, this.endY, grid
         );
@@ -384,7 +385,7 @@ $.extend(Controller, {
         View.clearBlockedNodes();
     },
     buildNewGrid: function () {
-        this.grid = new PF.Grid(this.gridSize[0], this.gridSize[1]);
+        this.grid = new PF.Grid(this.gridSize[0], this.gridSize[1]);// div create grid
     },
     mousedown: function (event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
@@ -516,7 +517,7 @@ $.extend(Controller, {
             data: qdata,
             dataType: 'json',
             success: function (data) {
-                console.info(data);
+                console.log(data);
             }
         });
     }

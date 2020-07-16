@@ -2,6 +2,7 @@
  * The pathfinding visualization.
  * It uses raphael.js to show the grids.
  */
+//Two types of coordinates, grid and page, u concern urself with only GRID
 var View = {
     nodeSize: 30, // width and height of a single node, in pixel
     nodeStyle: {
@@ -146,7 +147,7 @@ var View = {
     /**
      * Set the attribute of the node at the given coordinate.
      */
-    setAttributeAt: function(gridX, gridY, attr, value) {
+    setAttributeAt: function(gridX, gridY, attr, value) {//div here
         var color, nodeStyle = this.nodeStyle;
         switch (attr) {
         case 'walkable':
@@ -196,7 +197,7 @@ var View = {
                 blockedNodes[i] = [];
             }
         }
-        node = blockedNodes[gridY][gridX];
+        node = blockedNodes[gridY][gridX];//div here changes
         if (value) {
             // clear blocked node
             if (node) {

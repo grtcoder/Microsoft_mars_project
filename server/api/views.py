@@ -7,5 +7,10 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
 # Create your views here.
 @api_view(('POST',))
 def test(request):
+<<<<<<< HEAD
+    print(request.GET)
+    return Response({})
+=======
     print(request.POST)
     return Response({'a':'b'})
+>>>>>>> b08d6d044c69939bcb0102000723ab0b385d8726
