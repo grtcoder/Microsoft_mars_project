@@ -102,8 +102,8 @@ $.extend(Controller, {
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
-        this.grid = new PF.Grid(numCols, numRows);//div grid declaration
-
+        this.grid = new map(numCols, numRows);//div grid declaration
+        // this.grid1.print_map();
         View.init({
             numCols: numCols,
             numRows: numRows
@@ -136,15 +136,15 @@ $.extend(Controller, {
             temp = Panel.getFinder();
         finder = temp[0];
         query = temp[1];
-        query['gridsize']=this.gridSize;
-        // query['grid']=this.grid.nodes;
-        // console.log(this.grid.nodes);
+        query['gridsize'] = this.gridSize;
+        query['grid'] = JSON.stringify(this.grid.matrix);
+        // console.log(this.grid.matrix);
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
         grid = this.grid.clone(); //div making a clone of grid
-        this.path = finder.findPath(
-            this.startX, this.startY, this.endX, this.endY, grid
-        );
+        // this.path = finder.findPath(
+        //     this.startX, this.startY, this.endX, this.endY, grid
+        // );
         this.operationCount = this.operations.length;
         timeEnd = window.performance ? performance.now() : Date.now();
         this.timeSpent = (timeEnd - timeStart).toFixed(4);
@@ -183,6 +183,7 @@ $.extend(Controller, {
             operationCount: this.operationCount,
         });
         View.drawPath(this.path);
+        console.log(this.path);
         // => finished
     },
     onclear: function (event, from, to) {
@@ -385,14 +386,14 @@ $.extend(Controller, {
         View.clearBlockedNodes();
     },
     buildNewGrid: function () {
-        this.grid = new PF.Grid(this.gridSize[0], this.gridSize[1]);// div create grid
+        this.grid = new map(this.gridSize[0], this.gridSize[1]);// div create grid
     },
     mousedown: function (event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
             gridX = coord[0],
             gridY = coord[1],
             grid = this.grid;
-
+        console.log([gridX, gridY]);
         if (this.can('dragStart') && this.isStartPos(gridX, gridY)) {
             this.dragStart();
             return;
@@ -401,11 +402,11 @@ $.extend(Controller, {
             this.dragEnd();
             return;
         }
-        if (this.can('drawWall') && grid.isWalkableAt(gridX, gridY)) {
+        if (this.can('drawWall') && !grid.is_wall(gridX, gridY)) {
             this.drawWall(gridX, gridY);
             return;
         }
-        if (this.can('eraseWall') && !grid.isWalkableAt(gridX, gridY)) {
+        if (this.can('eraseWall') && grid.is_wall(gridX, gridY)) {
             this.eraseWall(gridX, gridY);
         }
     },
@@ -419,14 +420,14 @@ $.extend(Controller, {
             return;
         }
 
-        switch (this.current) {
+        switch (this.current) {// div this.current denotes current state of state map
             case 'draggingStart':
-                if (grid.isWalkableAt(gridX, gridY)) {
+                if (grid.is_normal(gridX, gridY)) {
                     this.setStartPos(gridX, gridY);
                 }
                 break;
             case 'draggingEnd':
-                if (grid.isWalkableAt(gridX, gridY)) {
+                if (grid.is_normal(gridX, gridY)) {
                     this.setEndPos(gridX, gridY);
                 }
                 break;
@@ -498,7 +499,12 @@ $.extend(Controller, {
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function (gridX, gridY, walkable) {
-        this.grid.setWalkableAt(gridX, gridY, walkable);
+        // console.log('==> set walkable at');
+        if (walkable)
+            this.grid.matrix[gridY][gridX] = 1;
+        else
+            this.grid.matrix[gridY][gridX] = 'B';
+        // console.log(this.grid.matrix[gridY][gridX]);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
     },
     isStartPos: function (gridX, gridY) {

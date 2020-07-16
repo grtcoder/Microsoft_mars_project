@@ -10,8 +10,12 @@ var View = {
             fill: 'white',
             'stroke-opacity': 0.2, // the border
         },
-        blocked: {
+        weighted: {
             fill: 'grey',
+            'stroke-opacity': 0.2,
+        },
+        blocked: {
+            fill: 'black',
             'stroke-opacity': 0.2,
         },
         start: {
@@ -247,6 +251,7 @@ var View = {
             return;
         }
         var svgPath = this.buildSvgPath(path);
+        console.log(svgPath);
         this.path = this.paper.path(svgPath).attr(this.pathStyle);
     },
     /**
@@ -261,7 +266,6 @@ var View = {
             strs.push('L' + (path[i][0] * size + size / 2) + ' ' +
                       (path[i][1] * size + size / 2));
         }
-
         return strs.join('');
     },
     clearPath: function() {
