@@ -1,5 +1,5 @@
 class map {
-    constructor(length, breadth) {
+    constructor(length, breadth, def) {
         this.length = length;
         this.breadth = breadth;
         this.matrix = [];
@@ -7,7 +7,7 @@ class map {
         for (let i = 0; i < breadth; i++) {
             var arr = []
             for (let j = 0; j < length; j++) {
-                arr.push(1);
+                arr.push(def);
             }
             this.matrix.push(arr);
         }
@@ -30,13 +30,18 @@ class map {
     is_wall(x, y) {
         return this.is_valid(x, y) && (this.matrix[y][x] == 'B');
     }
+    is_rough(x, y) {
+        return Number.isInteger(this.matrix[y][x]) && !this.is_normal(x, y);
+    }
     is_normal(x, y) {
-        return this.is_valid(x, y) && (this.matrix[y][x] == 1);
+        return this.is_valid(x, y) && this.matrix[y][x] == 1;
     }
 };
-// var x = new map(5, 5);
-// x.matrix[0][4] = 'B';
-// x.print_map();
+var x = new map(5, 5, 0);
+a=x.matrix[0][4];
+a=3;
+x.matrix[0][4]=a;
+x.print_map();
 
 
 

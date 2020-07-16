@@ -75,18 +75,13 @@ var Controller = StateMachine.create({
             to: 'draggingEnd'
         },
         {
-            name: 'drawWall',
+            name: 'changeNode',
             from: ['ready', 'finished'],
-            to: 'drawingWall'
-        },
-        {
-            name: 'eraseWall',
-            from: ['ready', 'finished'],
-            to: 'erasingWall'
+            to: 'changingNode'
         },
         {
             name: 'rest',
-            from: ['draggingStart', 'draggingEnd', 'drawingWall', 'erasingWall'],
+            from: ['draggingStart', 'draggingEnd', 'changingNode'],
             to: 'ready'
         },
     ],
@@ -95,20 +90,20 @@ var Controller = StateMachine.create({
 $.extend(Controller, {
     gridSize: [64, 36], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
-    query: {},
     /**
-     * Asynchronous transition from `none` state to `ready` state.
-     */
+ * Asynchronous transition from `none` state to `ready` state.
+ */
     onleavenone: function () {
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
-        this.grid = new map(numCols, numRows);//div grid declaration
-        // this.grid1.print_map();
-        View.init({
-            numCols: numCols,
-            numRows: numRows
-        });
+        this.grid = new map(numCols, numRows, 1);//div grid declaration
+        this.values = new map(this.gridSize[0], this.gridSize[1], 0),
+            // this.grid1.print_map();
+            View.init({
+                numCols: numCols,
+                numRows: numRows
+            });
         View.generateGrid(function () {
             Controller.setDefaultStartEndPos();
             Controller.bindEvents();
@@ -122,25 +117,21 @@ $.extend(Controller, {
         return StateMachine.ASYNC;
         // => ready
     },
-    ondrawWall: function (event, from, to, gridX, gridY) {
-        this.setWalkableAt(gridX, gridY, false);
-        // => drawingWall
-    },
-    oneraseWall: function (event, from, to, gridX, gridY) {
-        this.setWalkableAt(gridX, gridY, true);
-        // => erasingWall
+    onchangeNode: function (event, from, to, gridX, gridY, val) {
+        console.log('==> changeNode');
+        console.log(val);
+        this.setWalkableAt(gridX, gridY, val);
+        // => changingNode
     },
     onsearch: function (event, from, to) {
         var grid,
             timeStart, timeEnd,
             query = Panel.getFinder();
-        query['gridsize'] = this.gridSize;
+        query['gridsize'] = JSON.stringify(this.gridSize);
         query['grid'] = JSON.stringify(this.grid.matrix);
-        // console.log(this.query);
-        for(var key in this.query){
-            console.log(key);
-            query[key]=this.query[key];
-        }
+        query['start'] = JSON.stringify([this.startX, this.startY]);
+        query['end'] = JSON.stringify([this.endX, this.endY]);
+        // console.log(query);
         // console.log(this.grid.matrix);
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
@@ -390,6 +381,7 @@ $.extend(Controller, {
     },
     buildNewGrid: function () {
         this.grid = new map(this.gridSize[0], this.gridSize[1]);// div create grid
+        this.values = new map(this.gridSize[0], this.gridSize[1], 0);
     },
     mousedown: function (event) {
         var coord = View.toGridCoordinate(event.pageX, event.pageY),
@@ -405,12 +397,16 @@ $.extend(Controller, {
             this.dragEnd();
             return;
         }
-        if (this.can('drawWall') && !grid.is_wall(gridX, gridY)) {
-            this.drawWall(gridX, gridY);
+        if (this.can('changeNode') && !this.isStartOrEndPos(gridX, gridY)) {
+            console.log('just');
+            var val = this.values.matrix[gridY][gridX];
+            val = (val + 1) % 3;
+            var list = [1, 2, 'B'];
+            this.values.matrix[gridY][gridX] = val;
+            grid.matrix[gridY][gridX] = list[val];
+            this.changeNode(gridX, gridY, val);
+            console.log('changed!!!');
             return;
-        }
-        if (this.can('eraseWall') && grid.is_wall(gridX, gridY)) {
-            this.eraseWall(gridX, gridY);
         }
     },
     mousemove: function (event) {
@@ -434,11 +430,9 @@ $.extend(Controller, {
                     this.setEndPos(gridX, gridY);
                 }
                 break;
-            case 'drawingWall':
-                this.setWalkableAt(gridX, gridY, false);
-                break;
-            case 'erasingWall':
-                this.setWalkableAt(gridX, gridY, true);
+            case 'changingNode':
+                console.log('changingNode');
+                this.setWalkableAt(gridX, gridY, this.matrix.values[gridY][gridX]);
                 break;
         }
     },
@@ -494,21 +488,19 @@ $.extend(Controller, {
     setStartPos: function (gridX, gridY) {
         this.startX = gridX;
         this.startY = gridY;
-        this.query['start'] = [gridX, gridY];
+        this.grid.matrix[gridY][gridX] = 'S';
         View.setStartPos(gridX, gridY);
     },
     setEndPos: function (gridX, gridY) {
         this.endX = gridX;
         this.endY = gridY;
-        this.query['end'] = [gridX, gridY];
+        this.grid.matrix[gridY][gridX] = 'E';
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function (gridX, gridY, walkable) {
-        // console.log('==> set walkable at');
-        if (walkable)
-            this.grid.matrix[gridY][gridX] = 1;
-        else
-            this.grid.matrix[gridY][gridX] = 'B';
+        console.log('==> set walkable at');
+        console.log(gridX);
+        // this.grid.matrix[gridY][gridX] = list[walkable]
         // console.log(this.grid.matrix[gridY][gridX]);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);
     },
