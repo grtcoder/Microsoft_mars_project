@@ -14,6 +14,9 @@ def home():
 def disp(num):
     return jsonify({'data':num**4})
 
+
+
+
 if __name__ == '__main__':
     app.run(debug = True)
 
