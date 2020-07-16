@@ -1,4 +1,3 @@
-const point=require('./point');
 class map {
     constructor(length, breadth) {
         this.length = length;
@@ -6,28 +5,34 @@ class map {
         this.matrix = [];
         const default_array = []
         for (let i = 0; i < breadth; i++) {
-            var arr=[]
+            var arr = []
             for (let j = 0; j < length; j++) {
-                // var val=new point.point(i,j);
-                arr.push('0');
+                arr.push(1);
             }
             this.matrix.push(arr);
         }
-        // console.log(this.matrix);
     }
     print_map() {
         for (let i = 0; i < this.breadth; i++) {
             for (let j = 0; j < this.length; j++) {
-                process.stdout.write(this.matrix[i][j]+' ');
+                process.stdout.write(this.matrix[i][j] + ' ');
             }
             process.stdout.write('\n');
         }
     }
+    clone() {
+        var newMap = new map(this.length, this.breadth);
+        newMap.matrix = JSON.parse(JSON.stringify(this.matrix));
+        return newMap;
+    }
 };
+
 // var x = new map(5, 5);
-// x.matrix[0][4] = '1';
+// var y=x.clone();
+// x.matrix[0][4] = 0;
 // x.print_map();
-exports.map = map;
+// y.print_map();
+// exports.map = map;
 
 
 
