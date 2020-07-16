@@ -4,6 +4,7 @@
  * See https://github.com/jakesgordon/javascript-state-machine
  * for the document of the StateMachine module.
  */
+
 var Controller = StateMachine.create({
     initial: 'none',
     events: [
@@ -94,7 +95,7 @@ var Controller = StateMachine.create({
 $.extend(Controller, {
     gridSize: [64, 36], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
-
+    query: {},
     /**
      * Asynchronous transition from `none` state to `ready` state.
      */
@@ -132,12 +133,14 @@ $.extend(Controller, {
     onsearch: function (event, from, to) {
         var grid,
             timeStart, timeEnd,
-
-            temp = Panel.getFinder();
-        finder = temp[0];
-        query = temp[1];
+            query = Panel.getFinder();
         query['gridsize'] = this.gridSize;
         query['grid'] = JSON.stringify(this.grid.matrix);
+        // console.log(this.query);
+        for(var key in this.query){
+            console.log(key);
+            query[key]=this.query[key];
+        }
         // console.log(this.grid.matrix);
         this.sendsamplerequest(query);
         timeStart = window.performance ? performance.now() : Date.now();
@@ -491,11 +494,13 @@ $.extend(Controller, {
     setStartPos: function (gridX, gridY) {
         this.startX = gridX;
         this.startY = gridY;
+        this.query['start'] = [gridX, gridY];
         View.setStartPos(gridX, gridY);
     },
     setEndPos: function (gridX, gridY) {
         this.endX = gridX;
         this.endY = gridY;
+        this.query['end'] = [gridX, gridY];
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function (gridX, gridY, walkable) {

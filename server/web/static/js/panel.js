@@ -57,21 +57,21 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                if (biDirectional) {
-                    finder = new PF.BiAStarFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners,
-                        heuristic: PF.Heuristic[heuristic],
-                        weight: weight
-                    });
-                } else {
-                    finder = new PF.AStarFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners,
-                        heuristic: PF.Heuristic[heuristic],
-                        weight: weight
-                    });
-                }
+                // if (biDirectional) {
+                //     finder = new PF.BiAStarFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners,
+                //         heuristic: PF.Heuristic[heuristic],
+                //         weight: weight
+                //     });
+                // } else {
+                //     finder = new PF.AStarFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners,
+                //         heuristic: PF.Heuristic[heuristic],
+                //         weight: weight
+                //     });
+                // }
                 break;
 
             case 'breadthfirst_header':
@@ -91,17 +91,17 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                if (biDirectional) {
-                    finder = new PF.BiBreadthFirstFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners
-                    });
-                } else {
-                    finder = new PF.BreadthFirstFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners
-                    });
-                }
+                // if (biDirectional) {
+                //     finder = new PF.BiBreadthFirstFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners
+                //     });
+                // } else {
+                //     finder = new PF.BreadthFirstFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners
+                //     });
+                // }
                 break;
 
             case 'bestfirst_header':
@@ -122,19 +122,19 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                if (biDirectional) {
-                    finder = new PF.BiBestFirstFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners,
-                        heuristic: PF.Heuristic[heuristic]
-                    });
-                } else {
-                    finder = new PF.BestFirstFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners,
-                        heuristic: PF.Heuristic[heuristic]
-                    });
-                }
+                // if (biDirectional) {
+                //     finder = new PF.BiBestFirstFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners,
+                //         heuristic: PF.Heuristic[heuristic]
+                //     });
+                // } else {
+                //     finder = new PF.BestFirstFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners,
+                //         heuristic: PF.Heuristic[heuristic]
+                //     });
+                // }
                 break;
 
             case 'dijkstra_header':
@@ -154,17 +154,17 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                if (biDirectional) {
-                    finder = new PF.BiDijkstraFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners
-                    });
-                } else {
-                    finder = new PF.DijkstraFinder({
-                        allowDiagonal: allowDiagonal,
-                        dontCrossCorners: dontCrossCorners
-                    });
-                }
+                // if (biDirectional) {
+                //     finder = new PF.BiDijkstraFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners
+                //     });
+                // } else {
+                //     finder = new PF.DijkstraFinder({
+                //         allowDiagonal: allowDiagonal,
+                //         dontCrossCorners: dontCrossCorners
+                //     });
+                // }
                 break;
 
             case 'jump_point_header':
@@ -182,11 +182,11 @@ var Panel = {
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
 
-                finder = new PF.JumpPointFinder({
-                    trackJumpRecursion: trackRecursion,
-                    heuristic: PF.Heuristic[heuristic],
-                    diagonalMovement: PF.DiagonalMovement.IfAtMostOneObstacle
-                });
+                // finder = new PF.JumpPointFinder({
+                //     trackJumpRecursion: trackRecursion,
+                //     heuristic: PF.Heuristic[heuristic],
+                //     diagonalMovement: PF.DiagonalMovement.IfAtMostOneObstacle
+                // });
                 break;
             case 'orth_jump_point_header':
                 trackRecursion = typeof $('#orth_jump_point_section ' +
@@ -202,11 +202,11 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                finder = new PF.JumpPointFinder({
-                    trackJumpRecursion: trackRecursion,
-                    heuristic: PF.Heuristic[heuristic],
-                    diagonalMovement: PF.DiagonalMovement.Never
-                });
+                // finder = new PF.JumpPointFinder({
+                //     trackJumpRecursion: trackRecursion,
+                //     heuristic: PF.Heuristic[heuristic],
+                //     diagonalMovement: PF.DiagonalMovement.Never
+                // });
                 break;
             case 'ida_header':
                 allowDiagonal = typeof $('#ida_section ' +
@@ -235,16 +235,16 @@ var Panel = {
                 query['trackRecursion'] = trackRecursion;
                 query['timeLimit'] = timeLimit;
                 //mars project stuff div
-                finder = new PF.IDAStarFinder({
-                    timeLimit: timeLimit,
-                    trackRecursion: trackRecursion,
-                    allowDiagonal: allowDiagonal,
-                    dontCrossCorners: dontCrossCorners,
-                    heuristic: PF.Heuristic[heuristic],
-                    weight: weight
-                });
+                // finder = new PF.IDAStarFinder({
+                //     timeLimit: timeLimit,
+                //     trackRecursion: trackRecursion,
+                //     allowDiagonal: allowDiagonal,
+                //     dontCrossCorners: dontCrossCorners,
+                //     heuristic: PF.Heuristic[heuristic],
+                //     weight: weight
+                // });
                 break;
         }
-        return [finder,query];
+        return query;
     }
 };
