@@ -99,10 +99,10 @@ def draw_tile(map, position, kwargs):
     if 'path' in kwargs and position in kwargs['path']: value = '+'
 
     # Check if we should print start point
-    if 'start' in kwargs and position == kwargs['start']: value = '@'
+    if 'start' in kwargs and position == kwargs['start']: value = 'S'
 
     # Check if we should print the goal point
-    if 'goal' in kwargs and position == kwargs['goal']: value = '$'
+    if 'goal' in kwargs and position == kwargs['goal']: value = 'E'
 
     # Return a tile value
     return value 
@@ -162,7 +162,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight):
             map_value = map.get(next)
 
             # Check if the node is a wall
-            if(map_value == '#'):
+            if(map_value == 'B'):
                 continue
 
             # Create a neighbor node
@@ -203,7 +203,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight):
         green_nodes.append(new_green_nodes)
 
     # Return None, no path is found
-    return None, new_green_nodes, closed
+    return None, green_nodes, closed
 
 # Check if a neighbor should be added to open list
 def add_to_open(open, neighbor):
@@ -238,12 +238,12 @@ def main():
         # Add chars to map
         for x in range(len(chars)):
             map[(x, height)] = chars[x]
-            if(chars[x] == '@'):
+            if(chars[x] == 'S'):
 
 
 
                 start = (x, height)
-            elif(chars[x] == '$'):
+            elif(chars[x] == 'E'):
                 end = (x, height)
         
         # Increase the height of the map
@@ -255,7 +255,7 @@ def main():
     distance_function = "manhattan"
     weight = 1
     allowed_diagonal = False
-    # Find the closest path from start(@) to end($)
+    # Find the closest path from start(S) to end(E)
     path = astar_search(map, start, end, distance_function, allowed_diagonal, weight)
     print()
     print(path)

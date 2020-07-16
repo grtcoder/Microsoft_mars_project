@@ -1,0 +1,9 @@
+starting postion S
+ending postion E
+walkable (numbers)
+Blocked B
+Closed C
+Path P
+Opened O
+
+
