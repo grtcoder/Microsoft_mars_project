@@ -15,5 +15,9 @@ def test(request):
     print(json.loads(request.POST['end']))
     path_nodes, green_nodes, closed_nodes = astar_search(json.loads(request.POST['grid']), json.loads(request.POST['start']), json.loads(request.POST['end']), request.POST['heuristic'], json.loads(request.POST['allowDiagonal']), json.loads(request.POST['weight']), json.loads(request.POST['gridsize']) )
     # print(path_nodes,green_nodes,closed_nodes)
+<<<<<<< HEAD
     print(path_nodes)
+=======
+    print(request.POST)
+>>>>>>> 5a4b7c0507e8ab9a4b6c10204dc5718c1770637b
     return Response({'a':'b'})
