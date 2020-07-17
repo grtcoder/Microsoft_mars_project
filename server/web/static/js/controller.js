@@ -88,7 +88,7 @@ var Controller = StateMachine.create({
 });
 
 $.extend(Controller, {
-    gridSize: [5, 5], // number of nodes horizontally and vertically
+    gridSize: [3, 3], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
     /**
  * Asynchronous transition from `none` state to `ready` state.
@@ -486,7 +486,7 @@ $.extend(Controller, {
         // this.setEndPos(centerX + 5, centerY);
 
         this.setStartPos(0, 0)
-        this.setEndPos(4, 4)
+        this.setEndPos(2, 2)
     },
     setStartPos: function (gridX, gridY) {
         this.startX = gridX;

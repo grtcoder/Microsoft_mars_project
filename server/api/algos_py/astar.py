@@ -4,7 +4,7 @@ import math
 class Node:
 
     # Initialize the class
-    def __init__(self, position:(), parent:()):
+    def __init__(self, position:[], parent:[]):
         self.position = position
         self.parent = parent
         self.g = 0 # Distance to start node
@@ -46,15 +46,19 @@ def distance_octile(node1, node2):
     D = 1
     D2 = math.sqrt(2)
     dx = abs(node1.position[0] - node2.position[0])
-    dy = abs(node1.position[0] - node2.position[1])
-    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+    dy = abs(node1.position[1] - node2.position[1])
+    F = sqrt(2) - 1
+    if dx < dy :
+        return F * dx + dy
+    else:
+        return F * dy + dx
 
 def distance_chebyshev(node1, node2):
     D = 1
     D2 = 1
     dx = abs(node1.position[0] - node2.position[0])
-    dy = abs(node1.position[0] - node2.position[1])
-    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+    dy = abs(node1.position[1] - node2.position[1])
+    return max(dx, dy)
 
 
 # Euclidean distance can be used with any number of directions allowed
@@ -62,14 +66,14 @@ def distance_chebyshev(node1, node2):
 def distance_euclidean(node1, node2):
     D = 1 # D is the weight of contribution of h in f
     dx = abs(node1.position[0] - node2.position[0])
-    dy = abs(node1.position[0] - node2.position[1])
+    dy = abs(node1.position[1] - node2.position[1])
     return D * math.sqrt(dx * dx + dy * dy)
 
 # Manhattan distance to be used when diagonal distance not allowed
 
 def distance_manhattan(node1, node2):
     dx = abs(node1.position[0] - node2.position[0])
-    dy = abs(node1.position[0] - node2.position[1])
+    dy = abs(node1.position[1] - node2.position[1])
     return dx + dy
 
 # But we are going to use any of the heuristic function for either case 
@@ -118,37 +122,29 @@ def is_valid(x, y, grid_size):
 
 
 # A* search
-<<<<<<< HEAD
 def astar_search(map, start, end, distance_function, allowed_diagonal, weight, grid_size):
-=======
-def astar_search(map, start, end, distance_function, allowed_diagonal, weight,is_best_first):
->>>>>>> 5a4b7c0507e8ab9a4b6c10204dc5718c1770637b
     
     # Create lists for open nodes and closed nodes
     open = []
     closed = []
 
-    print(start)
-    print(end)
-    
     # Create a start node and an goal node
     start_node = Node(start, None)
     goal_node = Node(end, None)
-
     green_nodes = []
-
     # Add the start node
     open.append(start_node)
     
     # Loop until the open list is empty
     while len(open) > 0:
 
+         
         # Sort the open list to get the node with the lowest cost first
         open.sort()
-
         # Get the node with the lowest cost
-        current_node = open.pop(0)
-
+        current_node = open.pop(0)   
+        if(current_node in closed):
+            continue
         # Add the current node to the closed list
         closed.append(current_node)
         
@@ -160,16 +156,16 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,is
                 current_node = current_node.parent
             #path.append(start) 
             # Return reversed path
-            return path[::-1], green_nodes, closed
+            return path, green_nodes, closed
 
         # Unzip the current node position
-        (x, y) = current_node.position
+        [x, y] = (current_node.position[0], current_node.position[1])
 
         # Get neighbors
         if(allowed_diagonal == True):
-            neighbors = [(x-1, y), (x+1, y), (x, y-1), (x, y+1), (x+1, y+1), (x-1, y-1), (x-1, y+1), (x+1, y-1)]
+            neighbors = [[x-1, y], [x+1, y], [x, y-1], [x, y+1], [x+1, y+1], [x-1, y-1], [x-1, y+1], [x+1, y-1]]
         else:
-            neighbors =  [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
+            neighbors =  [[x-1, y], [x+1, y], [x, y-1], [x, y+1]]
 
         # Loop neighbors
         new_green_nodes = []
@@ -192,52 +188,28 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,is
             # Check if the neighbor is in the closed list
             if(neighbor in closed):
                 continue
-            
 
-            if is_best_first :
-            
-                if(distance_function == "chebyshev"):
-                    neighbor.g = distance_chebyshev(neighbor, current_node)
-                    neighbor.h = distance_chebyshev(neighbor, goal_node)
-                    neighbor.f = neighbor.h
+        
+            if(distance_function == "chebyshev"):
+                neighbor.g = distance_chebyshev(neighbor, current_node)
+                neighbor.h = distance_chebyshev(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
 
-                elif(distance_function == "euclidean"):
-                    neighbor.g = distance_euclidean(neighbor, current_node)
-                    neighbor.h = distance_euclidean(neighbor, goal_node)
-                    neighbor.f = neighbor.h
+            if(distance_function == "euclidean"):
+                neighbor.g = distance_euclidean(neighbor, current_node)
+                neighbor.h = distance_euclidean(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
 
-                elif(distance_function == "manhattan"):
-                    neighbor.g = distance_manhattan(neighbor, current_node)
-                    neighbor.h = distance_manhattan(neighbor, goal_node)
-                    neighbor.f = neighbor.h
+            if(distance_function == "manhattan"):
+                neighbor.g = distance_manhattan(neighbor, current_node)
+                neighbor.h = distance_manhattan(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
 
-                elif(distance_function == "octile"):
-                    neighbor.g = distance_octile(neighbor, current_node)
-                    neighbor.h = distance_octile(neighbor, goal_node)
-                    neighbor.f = neighbor.h
-            
-            else:
-            
-                if(distance_function == "chebyshev"):
-                    neighbor.g = distance_chebyshev(neighbor, current_node)
-                    neighbor.h = distance_chebyshev(neighbor, goal_node)
-                    neighbor.f = neighbor.g + weight * neighbor.h
+            if(distance_function == "octile"):
+                neighbor.g = distance_octile(neighbor, current_node)
+                neighbor.h = distance_octile(neighbor, goal_node)
+                neighbor.f = neighbor.g + weight * neighbor.h
 
-                elif(distance_function == "euclidean"):
-                    neighbor.g = distance_euclidean(neighbor, current_node)
-                    neighbor.h = distance_euclidean(neighbor, goal_node)
-                    neighbor.f = neighbor.g + weight * neighbor.h
-
-                elif(distance_function == "manhattan"):
-                    neighbor.g = distance_manhattan(neighbor, current_node)
-                    neighbor.h = distance_manhattan(neighbor, goal_node)
-                    neighbor.f = neighbor.g + weight * neighbor.h
-
-                elif(distance_function == "octile"):
-                    neighbor.g = distance_octile(neighbor, current_node)
-                    neighbor.h = distance_octile(neighbor, goal_node)
-                    neighbor.f = neighbor.g + weight * neighbor.h
-            
             
 
             # Check if neighbor is in open list and if it has a lower f value
