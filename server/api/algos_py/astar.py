@@ -24,12 +24,13 @@ class Node:
         return ('({0},{1})'.format(self.position, self.f))
 
 # Draw a grid
+"""
 def draw_grid(map, width, height, spacing=2, **kwargs):
     for y in range(height):
         for x in range(width):
             print('%%-%ds' % spacing % draw_tile(map, (x, y), kwargs), end='')
         print()
-
+"""
 
 
 
@@ -88,7 +89,7 @@ def distance_manhattan(node1, node2):
 
 
 
-
+"""
 # Draw a tile
 def draw_tile(map, position, kwargs):
     
@@ -106,14 +107,26 @@ def draw_tile(map, position, kwargs):
 
     # Return a tile value
     return value 
+"""
+
+def is_valid(x, y, grid_size):
+    if (x >= 0 and x < grid_size[1] and y >= 0 and y < grid_size[0]):
+        return True
+    return False
+
+
+
 
 # A* search
-def astar_search(map, start, end, distance_function, allowed_diagonal, weight):
+def astar_search(map, start, end, distance_function, allowed_diagonal, weight, grid_size):
     
     # Create lists for open nodes and closed nodes
     open = []
     closed = []
 
+    print(start)
+    print(end)
+    
     # Create a start node and an goal node
     start_node = Node(start, None)
     goal_node = Node(end, None)
@@ -159,7 +172,11 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight):
         for next in neighbors:
 
             # Get value from map
-            map_value = map.get(next)
+
+            # check if the node is inside in a grid
+            if( not is_valid(next[0], next[1], grid_size)):
+                continue
+            map_value = map[next[0]][next[1]]
 
             # Check if the node is a wall
             if(map_value == 'B'):

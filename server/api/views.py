@@ -5,12 +5,15 @@ from rest_framework import viewsets, permissions, authentication, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
 from api.algos_py.astar import *
+import json
 
 
 # Create your views here.
 @api_view(('POST',))
 def test(request):
-    print(request.POST['start'])
-    # path_nodes, green_nodes, closed_nodes = astar_search(request.POST['grid'], request.POST['start'], request.POST['end'], request.POST['heuristic'], request.POST['allowDiagonal'], request.POST['weight'] )
+    print(json.loads(request.POST['grid']))
+    print(json.loads(request.POST['end']))
+    path_nodes, green_nodes, closed_nodes = astar_search(json.loads(request.POST['grid']), json.loads(request.POST['start']), json.loads(request.POST['end']), request.POST['heuristic'], json.loads(request.POST['allowDiagonal']), json.loads(request.POST['weight']), json.loads(request.POST['gridsize']) )
     # print(path_nodes,green_nodes,closed_nodes)
+    print(path_nodes)
     return Response({'a':'b'})
