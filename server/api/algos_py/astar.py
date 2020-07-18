@@ -125,7 +125,6 @@ def is_valid(x, y, grid_size):
 
 # A* search
 def astar_search(map, start, end, distance_function, allowed_diagonal, weight, grid_size):
-    
     # Create lists for open nodes and closed nodes
     open = []
     closed = []
@@ -149,6 +148,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight, g
             continue
         # Add the current node to the closed list
         closed.append(current_node)
+        print(current_node)
         
         # Check if we have reached the goal, return the path
         if current_node == goal_node:
@@ -178,8 +178,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight, g
             # check if the node is inside in a grid
             if( not is_valid(next[0], next[1], grid_size)):
                 continue
-            map_value = map[next[0]][next[1]]
-
+            map_value = map[next[1]][next[0]]
             # Check if the node is a wall
             if(map_value == 'B'):
                 continue
