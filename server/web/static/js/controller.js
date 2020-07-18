@@ -88,8 +88,10 @@ var Controller = StateMachine.create({
 });
 
 $.extend(Controller, {
-    gridSize: [3, 3], // number of nodes horizontally and vertically
+    gridSize: [64, 36], // number of nodes horizontally and vertically
     operationsPerSecond: 300,
+    path: [],
+    operations: [],
     /**
  * Asynchronous transition from `none` state to `ready` state.
  */
@@ -131,17 +133,24 @@ $.extend(Controller, {
         query['grid'] = JSON.stringify(this.grid.matrix);
         query['start'] = JSON.stringify([this.startX, this.startY]);
         query['end'] = JSON.stringify([this.endX, this.endY]);
-        // console.log(query);
-        // console.log(this.grid.matrix);
-        this.sendsamplerequest(query);
-        timeStart = window.performance ? performance.now() : Date.now();
-        grid = this.grid.clone(); //div making a clone of grid
-        // this.path = finder.findPath(
-        //     this.startX, this.startY, this.endX, this.endY, grid
-        // );
+        var datum;
+        $.ajax({
+            url: 'http://127.0.0.1:8000/api/test/',
+            type: 'post',
+            async: false,
+            data: query,
+            dataType: 'json',
+            success: function (data) {
+                datum=data;
+            }
+        });
+        console.log(query['grid']);
+        this.path=datum['path_nodes'];
+        this.operations=datum['ops'];
+        console.log(this.path);
+        // this.path=data['']
         this.operationCount = this.operations.length;
-        timeEnd = window.performance ? performance.now() : Date.now();
-        this.timeSpent = (timeEnd - timeStart).toFixed(4);
+        this.timeSpent = 2;//div change this
         this.loop();
         // => searching
     },
@@ -172,7 +181,7 @@ $.extend(Controller, {
     },
     onfinish: function (event, from, to) {
         View.showStats({
-            pathLength: PF.Util.pathLength(this.path),
+            pathLength: this.path.length,
             timeSpent: this.timeSpent,
             operationCount: this.operationCount,
         });
@@ -296,44 +305,44 @@ $.extend(Controller, {
      */
     hookPathFinding: function () {
 
-        PF.Node.prototype = {
-            get opened() {
-                return this._opened;
-            },
-            set opened(v) {
-                this._opened = v;
-                Controller.operations.push({
-                    x: this.x,
-                    y: this.y,
-                    attr: 'opened',
-                    value: v
-                });
-            },
-            get closed() {
-                return this._closed;
-            },
-            set closed(v) {
-                this._closed = v;
-                Controller.operations.push({
-                    x: this.x,
-                    y: this.y,
-                    attr: 'closed',
-                    value: v
-                });
-            },
-            get tested() {
-                return this._tested;
-            },
-            set tested(v) {
-                this._tested = v;
-                Controller.operations.push({
-                    x: this.x,
-                    y: this.y,
-                    attr: 'tested',
-                    value: v
-                });
-            },
-        };
+        //     PF.Node.prototype = {
+        //         get opened() {
+        //             return this._opened;
+        //         },
+        //         set opened(v) {
+        //             this._opened = v;
+        //             Controller.operations.push({
+        //                 x: this.x,
+        //                 y: this.y,
+        //                 attr: 'opened',
+        //                 value: v
+        //             });
+        //         },
+        //         get closed() {
+        //             return this._closed;
+        //         },
+        //         set closed(v) {
+        //             this._closed = v;
+        //             Controller.operations.push({
+        //                 x: this.x,
+        //                 y: this.y,
+        //                 attr: 'closed',
+        //                 value: v
+        //             });
+        //         },
+        //         get tested() {
+        //             return this._tested;
+        //         },
+        //         set tested(v) {
+        //             this._tested = v;
+        //             Controller.operations.push({
+        //                 x: this.x,
+        //                 y: this.y,
+        //                 attr: 'tested',
+        //                 value: v
+        //             });
+        //         },
+        //     };
 
         this.operations = [];
     },
@@ -344,6 +353,7 @@ $.extend(Controller, {
             .mouseup($.proxy(this.mouseup, this));
     },
     loop: function () {
+        console.log('==>loop');
         var interval = 1000 / this.operationsPerSecond;
         (function loop() {
             if (!Controller.is('searching')) {
@@ -356,17 +366,18 @@ $.extend(Controller, {
     step: function () {
         var operations = this.operations,
             op, isSupported;
-
+        // console.log("==> step");
         do {
             if (!operations.length) {
                 this.finish(); // transit to `finished` state
                 return;
             }
+            // console.log("==> ok");
             op = operations.shift();
-            isSupported = View.supportedOperations.indexOf(op.attr) !== -1;
+            // console.log(op);
+            isSupported = View.supportedOperations.indexOf(op[1]) !== -1;
         } while (!isSupported);
-
-        View.setAttributeAt(op.x, op.y, op.attr, op.value);
+        View.setAttributeAt(op[0][0], op[0][1], op[1], op[2]);
     },
     clearOperations: function () {
         this.operations = [];
@@ -482,11 +493,11 @@ $.extend(Controller, {
         centerX = Math.ceil(availWidth / 2 / nodeSize);
         centerY = Math.floor(height / 2 / nodeSize);
 
-        // this.setStartPos(centerX - 5, centerY);
-        // this.setEndPos(centerX + 5, centerY);
+        this.setStartPos(centerX - 5, centerY);
+        this.setEndPos(centerX + 5, centerY);
 
-        this.setStartPos(0, 0)
-        this.setEndPos(2, 2)
+        // this.setStartPos(0, 0)
+        // this.setEndPos(2, 2)
     },
     setStartPos: function (gridX, gridY) {
         this.startX = gridX;
@@ -516,15 +527,4 @@ $.extend(Controller, {
     isStartOrEndPos: function (gridX, gridY) {
         return this.isStartPos(gridX, gridY) || this.isEndPos(gridX, gridY);
     },
-    sendsamplerequest: function (qdata) {
-        $.ajax({
-            url: 'http://127.0.0.1:8000/api/test/',
-            type: 'post',
-            data: qdata,
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-            }
-        });
-    }
 });

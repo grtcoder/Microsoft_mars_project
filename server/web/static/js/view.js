@@ -200,14 +200,25 @@ var View = {
         }, this.nodeZoomEffect.duration);
     },
     setWalkableAt: function (gridX, gridY, value) {
-        var node, i, blockedNodes = this.blockedNodes;
+        var node, i, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes;
         if (!blockedNodes) {
             blockedNodes = this.blockedNodes = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
                 blockedNodes[i] = [];
             }
         }
-        var node = blockedNodes[gridY][gridX];//div here changes
+        if (!roughNodes) {
+            roughNodes = this.roughNodes = new Array(this.numRows);
+            for (i = 0; i < this.numRows; ++i) {
+                roughNodes[i] = [];
+            }
+        }
+        var nodeBlock = blockedNodes[gridY][gridX];//div here changes
+        var nodeRough = roughNodes[gridY][gridX];
+        if(nodeBlock)
+            node=nodeBlock;
+        if(nodeRough)
+            node=nodeRough;
         console.log(value);
         if (value == 0) {
             // clear blocked node
@@ -220,16 +231,21 @@ var View = {
         }
         if (value == 1) {
             //add rough node
-            node = blockedNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
-            this.colorizeNode(node, this.nodeStyle.weighted.fill);
-            this.zoomNode(node);
+            if(nodeRough){
+                return;
+            }
+            nodeRough = roughNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
+            this.colorizeNode(nodeRough, this.nodeStyle.weighted.fill);
+            this.zoomNode(nodeRough);
             return;
         }
-        if (value==2){
+        if (value == 2) {
             // draw blocked node
-            node = blockedNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
-            this.colorizeNode(node, this.nodeStyle.blocked.fill);
-            this.zoomNode(node);
+            if(nodeBlock)
+                return;
+            nodeBlock = blockedNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
+            this.colorizeNode(nodeBlock, this.nodeStyle.blocked.fill);
+            this.zoomNode(nodeBlock);
             return;
         }
     },
@@ -244,7 +260,7 @@ var View = {
         }
     },
     clearBlockedNodes: function () {
-        var i, j, blockedNodes = this.blockedNodes;
+        var i, j, blockedNodes = this.blockedNodes,roughNodes=this.roughNodes;
         if (!blockedNodes) {
             return;
         }
@@ -253,6 +269,10 @@ var View = {
                 if (blockedNodes[i][j]) {
                     blockedNodes[i][j].remove();
                     blockedNodes[i][j] = null;
+                }
+                if(roughNodes[i][j]) {
+                    roughNodes[i][j].remove;
+                    blockedNodes[i][j]=null;
                 }
             }
         }

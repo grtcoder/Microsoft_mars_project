@@ -22,6 +22,8 @@ class Node:
     # Print node
     def __repr__(self):
         return ('({0},{1})'.format(self.position, self.f))
+    def pos(self):
+        return self.position
 
 # Draw a grid
 """
