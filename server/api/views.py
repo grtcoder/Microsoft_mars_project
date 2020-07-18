@@ -11,7 +11,7 @@ import json
 # Create your views here.
 @api_view(('POST',))
 def test(request):
-    # print(json.loads(request.POST['grid']))
+    print(request.POST['heuristic'])
     # print(json.loads(request.POST['end']))
     path_nodes, green_nodes, closed_nodes = astar_search(json.loads(request.POST['grid']), json.loads(request.POST['start']), json.loads(request.POST['end']), request.POST['heuristic'], json.loads(request.POST['allowDiagonal']), json.loads(request.POST['weight']), json.loads(request.POST['gridsize']) )
     print(len(green_nodes),len(closed_nodes))

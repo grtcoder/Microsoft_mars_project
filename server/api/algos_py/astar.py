@@ -49,7 +49,7 @@ def distance_octile(node1, node2):
     D2 = math.sqrt(2)
     dx = abs(node1.position[0] - node2.position[0])
     dy = abs(node1.position[1] - node2.position[1])
-    F = sqrt(2) - 1
+    F = math.sqrt(2) - 1
     if dx < dy :
         return F * dx + dy
     else:
