@@ -96,6 +96,7 @@ $.extend(Controller, {
  * Asynchronous transition from `none` state to `ready` state.
  */
     onleavenone: function () {
+        console.log('==> none left');
         var numCols = this.gridSize[0],
             numRows = this.gridSize[1];
 
@@ -126,9 +127,11 @@ $.extend(Controller, {
         // => changingNode
     },
     onsearch: function (event, from, to) {
-        var grid,
-            timeStart, timeEnd,
+        console.log('==> search')
+        var grid=this.grid,
             query = Panel.getFinder();
+        grid.matrix[this.startY][this.startX] = "S";
+        grid.matrix[this.endY][this.endX] = "E";
         query['gridsize'] = JSON.stringify(this.gridSize);
         query['grid'] = JSON.stringify(this.grid.matrix);
         query['start'] = JSON.stringify([this.startX, this.startY]);
@@ -141,12 +144,12 @@ $.extend(Controller, {
             data: query,
             dataType: 'json',
             success: function (data) {
-                datum=data;
+                datum = data;
             }
         });
         console.log(query['grid']);
-        this.path=datum['path_nodes'];
-        this.operations=datum['ops'];
+        this.path = datum['path_nodes'];
+        this.operations = datum['ops'];
         console.log(this.path);
         // this.path=data['']
         this.operationCount = this.operations.length;
@@ -198,6 +201,7 @@ $.extend(Controller, {
         // => modified
     },
     onreset: function (event, from, to) {
+        console.log('==> reset');
         setTimeout(function () {
             Controller.clearOperations();
             Controller.clearAll();
@@ -502,18 +506,18 @@ $.extend(Controller, {
     setStartPos: function (gridX, gridY) {
         this.startX = gridX;
         this.startY = gridY;
-        this.grid.matrix[gridY][gridX] = 'S';
+        // this.grid.matrix[gridY][gridX] = 'S';
         View.setStartPos(gridX, gridY);
     },
     setEndPos: function (gridX, gridY) {
         this.endX = gridX;
         this.endY = gridY;
-        this.grid.matrix[gridY][gridX] = 'E';
+        // this.grid.matrix[gridY][gridX] = 'E';
         View.setEndPos(gridX, gridY);
     },
     setWalkableAt: function (gridX, gridY, walkable) {
         console.log('==> set walkable at');
-        console.log(gridX);
+        // console.log(gridX);
         // this.grid.matrix[gridY][gridX] = list[walkable]
         // console.log(this.grid.matrix[gridY][gridX]);
         View.setAttributeAt(gridX, gridY, 'walkable', walkable);

@@ -267,12 +267,12 @@ var View = {
         for (i = 0; i < this.numRows; ++i) {
             for (j = 0; j < this.numCols; ++j) {
                 if (blockedNodes[i][j]) {
-                    blockedNodes[i][j].remove();
+                    // blockedNodes[i][j].remove();
                     blockedNodes[i][j] = null;
                 }
                 if(roughNodes[i][j]) {
-                    roughNodes[i][j].remove;
-                    blockedNodes[i][j]=null;
+                    // roughNodes[i][j].remove;
+                    roughNodes[i][j]=null;
                 }
             }
         }
