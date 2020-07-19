@@ -128,7 +128,7 @@ $.extend(Controller, {
     },
     onsearch: function (event, from, to) {
         console.log('==> search')
-        var grid=this.grid,
+        var grid = this.grid,
             query = Panel.getFinder();
         grid.matrix[this.startY][this.startX] = "S";
         grid.matrix[this.endY][this.endX] = "E";
@@ -395,7 +395,7 @@ $.extend(Controller, {
         View.clearBlockedNodes();
     },
     buildNewGrid: function () {
-        this.grid = new map(this.gridSize[0], this.gridSize[1]);// div create grid
+        this.grid = new map(this.gridSize[0], this.gridSize[1], 1);// div create grid
         this.values = new map(this.gridSize[0], this.gridSize[1], 0);
     },
     mousedown: function (event) {

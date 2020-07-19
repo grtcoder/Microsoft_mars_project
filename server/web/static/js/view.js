@@ -215,10 +215,10 @@ var View = {
         }
         var nodeBlock = blockedNodes[gridY][gridX];//div here changes
         var nodeRough = roughNodes[gridY][gridX];
-        if(nodeBlock)
-            node=nodeBlock;
-        if(nodeRough)
-            node=nodeRough;
+        if (nodeBlock)
+            node = nodeBlock;
+        if (nodeRough)
+            node = nodeRough;
         console.log(value);
         if (value == 0) {
             // clear blocked node
@@ -226,12 +226,17 @@ var View = {
                 this.colorizeNode(node, this.nodeStyle.normal.fill);
                 this.zoomNode(node);
                 blockedNodes[gridY][gridX] = null;
+                roughNodes[gridY][gridX] = null;
+                if(nodeRough)
+                    nodeRough.remove();
+                if(nodeBlock)
+                    nodeBlock.remove();
                 return;
             }
         }
         if (value == 1) {
             //add rough node
-            if(nodeRough){
+            if (nodeRough) {
                 return;
             }
             nodeRough = roughNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
@@ -241,7 +246,7 @@ var View = {
         }
         if (value == 2) {
             // draw blocked node
-            if(nodeBlock)
+            if (nodeBlock)
                 return;
             nodeBlock = blockedNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
             this.colorizeNode(nodeBlock, this.nodeStyle.blocked.fill);
@@ -260,19 +265,19 @@ var View = {
         }
     },
     clearBlockedNodes: function () {
-        var i, j, blockedNodes = this.blockedNodes,roughNodes=this.roughNodes;
+        var i, j, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes;
         if (!blockedNodes) {
             return;
         }
         for (i = 0; i < this.numRows; ++i) {
             for (j = 0; j < this.numCols; ++j) {
                 if (blockedNodes[i][j]) {
-                    // blockedNodes[i][j].remove();
+                    blockedNodes[i][j].remove();
                     blockedNodes[i][j] = null;
                 }
-                if(roughNodes[i][j]) {
-                    // roughNodes[i][j].remove;
-                    roughNodes[i][j]=null;
+                if (roughNodes[i][j]) {
+                    roughNodes[i][j].remove();
+                    roughNodes[i][j] = null;
                 }
             }
         }

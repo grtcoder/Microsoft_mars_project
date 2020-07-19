@@ -13,7 +13,7 @@ import json
 def test(request):
     print(request.POST['heuristic'])
     # print(json.loads(request.POST['end']))
-    path_nodes, green_nodes, closed_nodes = astar_search(json.loads(request.POST['grid']), json.loads(request.POST['start']), json.loads(request.POST['end']), request.POST['heuristic'], json.loads(request.POST['allowDiagonal']), json.loads(request.POST['weight']), json.loads(request.POST['gridsize']) )
+    path_nodes, green_nodes, closed_nodes = astar_search(json.loads(request.POST['grid']), json.loads(request.POST['start']), json.loads(request.POST['end']), request.POST['heuristic'], json.loads(request.POST['allowDiagonal']), json.loads(request.POST['weight']), json.loads(request.POST['gridsize']) , False)
     print(len(green_nodes),len(closed_nodes))
     ops=[]
     for i in range(len(green_nodes)):
