@@ -137,9 +137,8 @@ $.extend(Controller, {
         query['start'] = JSON.stringify([this.startX, this.startY]);
         query['end'] = JSON.stringify([this.endX, this.endY]);
         var datum;
-        console.log(window.location.href);
         $.ajax({
-            url: window.location.href+'api/test/',
+            url: 'http://127.0.0.1:8000/api/test/',
             type: 'post',
             async: false,
             data: query,
@@ -154,7 +153,8 @@ $.extend(Controller, {
         console.log(this.path);
         // this.path=data['']
         this.operationCount = this.operations.length;
-        this.timeSpent = 2;//div change this
+        this.timeSpent = datum['time'];//div change this
+        this.length=datum['length'];
         this.loop();
         // => searching
     },
@@ -185,7 +185,7 @@ $.extend(Controller, {
     },
     onfinish: function (event, from, to) {
         View.showStats({
-            pathLength: this.path.length,
+            pathLength: this.length,
             timeSpent: this.timeSpent,
             operationCount: this.operationCount,
         });
