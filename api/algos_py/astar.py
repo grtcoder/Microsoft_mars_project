@@ -101,12 +101,24 @@ def hval(node1, node2, type, solver):
         return distance_octile(node1, node2)
 
 
-def gval(node1, node2, solver):
+def gval(node1, node2, solver, grid):
     if solver == "breadthfirst_header":
         return node1.g + 1
     if solver == "bestfirst_header":
         return 0
-    return node1.g + distance_euclidean(node1, node2)
+    x1 = node1.position[0]
+    y1 = node1.position[1]
+    x2 = node2.position[0]
+    y2 = node2.position[1]
+    if grid[y1][x1] == "S" or grid[y1][x1] == "E":
+        w1 = 1
+    else:
+        w1 = int(grid[y1][x1])
+    if grid[y2][x2] == "S" or grid[y2][x2] == "E":
+        w2 = 1
+    else:
+        w2 = int(grid[y2][x2])
+    return node1.g + ((w1 + w2) * distance_euclidean(node1, node2)) / 2
 
 
 def fval(node, solver, weight):
@@ -122,19 +134,23 @@ def getNeighbours(node, grid, allowed_diagonal, dontcross):
     neighbors = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]
     if (allowed_diagonal == True):
         if dontcross == True:
-            if grid[y][x+1]!="B" and grid[y+1][x]!="B":
-                neighbors.append([x+1,y+1])
-            if grid[y][x+1]!="B" and grid[y-1][x]!="B":
-                neighbors.append([x+1,y-1])
-            if grid[y][x-1]!="B" and grid[y+1][x]!="B":
-                neighbors.append([x-1,y+1])
-            if grid[y][x-1]!="B" and grid[y-1][x]!="B":
-                neighbors.append([x-1,y-1])
+            if grid[y][x + 1] != "B" and grid[y + 1][x] != "B":
+                neighbors.append([x + 1, y + 1])
+            if grid[y][x + 1] != "B" and grid[y - 1][x] != "B":
+                neighbors.append([x + 1, y - 1])
+            if grid[y][x - 1] != "B" and grid[y + 1][x] != "B":
+                neighbors.append([x - 1, y + 1])
+            if grid[y][x - 1] != "B" and grid[y - 1][x] != "B":
+                neighbors.append([x - 1, y - 1])
         else:
-            neighbors.append([x - 1, y - 1])
-            neighbors.append([x - 1, y + 1])
-            neighbors.append([x + 1, y - 1])
-            neighbors.append([x + 1, y + 1])
+            if grid[y][x + 1] != "B" or grid[y + 1][x] != "B":
+                neighbors.append([x + 1, y + 1])
+            if grid[y][x + 1] != "B" or grid[y - 1][x] != "B":
+                neighbors.append([x + 1, y - 1])
+            if grid[y][x - 1] != "B" or grid[y + 1][x] != "B":
+                neighbors.append([x - 1, y + 1])
+            if grid[y][x - 1] != "B" or grid[y - 1][x] != "B":
+                neighbors.append([x - 1, y - 1])
     return neighbors
 
 
@@ -195,14 +211,10 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
         # Check if we have reached the goal, return the path
         if current_node == goal_node:
             path = []
-            length = 0
-            prev = goal_node
+            length = current_node.g
             while current_node != start_node:
-                length += distance_euclidean(current_node, prev)
                 path.append(current_node.position)
-                prev = current_node
                 current_node = current_node.parent
-            length += distance_euclidean(prev, start_node)
             path.append(start_node.position)
             # Return reversed path
             return path, green_nodes, closed, length
@@ -235,7 +247,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
             if (neighbor in closed):
                 continue
 
-            neighbor.g = gval(current_node, neighbor, solver)
+            neighbor.g = gval(current_node, neighbor, solver, map)
             neighbor.h = hval(neighbor, goal_node, distance_function, solver)
             neighbor.f = fval(neighbor, solver, weight)
 
