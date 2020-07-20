@@ -138,7 +138,7 @@ $.extend(Controller, {
         query['end'] = JSON.stringify([this.endX, this.endY]);
         var datum;
         $.ajax({
-            url: 'http://127.0.0.1:8000/api/test/',
+            url: window.location.href+'api/test/',
             type: 'post',
             async: false,
             data: query,
