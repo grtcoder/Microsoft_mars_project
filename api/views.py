@@ -5,6 +5,7 @@ from rest_framework import viewsets, permissions, authentication, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
 from .algos_py.astar import *
+from .algos_py.ida_star import *
 import json
 import time
 
@@ -15,21 +16,34 @@ def test(request):
     start = time.process_time()
     print(bool(json.loads(request.POST['dontCrossCorners'])))
     # print(json.loads(request.POST['end']))
-    path_nodes, green_nodes, closed_nodes, length = astar_search(
-        json.loads(request.POST['grid']), json.loads(request.POST['start']),
-        json.loads(request.POST['end']), request.POST['heuristic'],
-        json.loads(request.POST['allowDiagonal']), int(request.POST['weight']),
-        json.loads(request.POST['gridsize']), request.POST['selected_header'],
-        bool(json.loads(request.POST['dontCrossCorners'])))
-    # print(len(green_nodes),len(closed_nodes))
-    # print(closed_nodes)
-    print(length)
-    ops = []
-    for i in range(len(green_nodes)):
-        ops.append([closed_nodes[i].pos(), 'closed', False])
-        for j in green_nodes[i]:
-            ops.append([j.pos(), 'opened', False])
-    ops.append([closed_nodes[-1].pos(), 'closed', False])
+
+    if request.POST['selected_header']=="ida_header":
+        ops=[]
+        length=0
+        path_nodes = iterative_deepening_a_star(
+            json.loads(request.POST['grid']), json.loads(request.POST['start']),
+            json.loads(request.POST['end']), request.POST['heuristic'],
+            json.loads(request.POST['allowDiagonal']), bool(json.loads(request.POST['dontCrossCorners'])))
+
+
+    else:
+        path_nodes, green_nodes, closed_nodes, length = astar_search(
+            json.loads(request.POST['grid']), json.loads(request.POST['start']),
+            json.loads(request.POST['end']), request.POST['heuristic'],
+            json.loads(request.POST['allowDiagonal']), int(request.POST['weight']),
+            json.loads(request.POST['gridsize']), request.POST['selected_header'],
+            bool(json.loads(request.POST['dontCrossCorners'])))
+        # print(len(green_nodes),len(closed_nodes))
+        # print(closed_nodes)
+        print(length)
+        ops = []
+        for i in range(len(green_nodes)):
+            ops.append([closed_nodes[i].pos(), 'closed', False])
+            for j in green_nodes[i]:
+                ops.append([j.pos(), 'opened', False])
+        ops.append([closed_nodes[-1].pos(), 'closed', False])
+
+
     path_nodes.reverse()
     # print(path_nodes)
     res = {

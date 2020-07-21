@@ -1,7 +1,7 @@
 
 from .astar import *
 
-def iterative_deepening_a_star_rec(map,node, goal, distance, threshold,allowed_diagonal,dont_cross,path):
+def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,allowed_diagonal,dont_cross,path,distance_function):
     """
     Performs DFS up to a depth where a threshold is reached (as opposed to interative-deepening DFS which stops at a fixed depth).
     Can be modified to handle graphs by keeping track of already visited nodes.
@@ -17,25 +17,37 @@ def iterative_deepening_a_star_rec(map,node, goal, distance, threshold,allowed_d
 
     if node == goal:
         # We have found the goal node we we're searching for
+       
+        current_node=node
+      # length = current_node.g
+        while current_node != first:
+            path.append(current_node.position)
+            current_node = current_node.parent
+        path.append(first.position)
         return -distance
 
-    estimate = distance +  hval(node, goal, distance_function, solver="ida_star")
+    estimate = distance +  hval(node, goal, distance_function,"ida_star")
 
     if estimate > threshold:
-        print("Breached threshold with heuristic: " + str(estimate))
+        #print("Breached threshold with heuristic: " + str(estimate))
         return estimate
 
     # ...then, for all neighboring nodes....
     min = float("inf")
 
     neighbors = getNeighbours(node, map, allowed_diagonal,
-                                  dontcross)
+                                  dont_cross)
 
 
     for next in neighbors:
         #if map[next[1]][next[0]] != 0:
-        t = iterative_deepening_a_star_rec(map, next, goal, distance + gval(node,next,solver="ida_star",map),path)
-        path.append(next)
+        if map[next[1]][next[0]]=='B':
+            continue
+        neighbor = Node(next, node)
+        
+        t = iterative_deepening_a_star_rec(first,map, neighbor, goal, distance + gval(node,neighbor,"ida_star",map),
+        threshold,allowed_diagonal,dont_cross,path,distance_function)
+        
         if t < 0:
             # Node found
             return t
@@ -61,7 +73,7 @@ def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagon
 
      # Create a start node and an goal node
     start_node = Node(start, None)
-    goal_node = Node(end, None)
+    goal_node = Node(goal, None)
 
 
     all_paths=[]
@@ -71,15 +83,16 @@ def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagon
     while True:
         #print("Iteration with threshold: " + str(threshold))
         path=[]
-        path.append(start_node)
-        distance = iterative_deepening_a_star_rec(map, start_node, goal_node, 0, threshold,allowed_diagonal,dont_cross,path)
-        all_paths.append(path)      #in-case of tracking recursion
+        first=start_node
+        distance = iterative_deepening_a_star_rec(first,map, start_node, goal_node, 0, threshold,allowed_diagonal,
+        dont_cross,path,distance_function)
+        #all_paths.append(path)      #in-case of tracking recursion
         if distance == float("inf"):
             # Node not found and no more nodes to visit
             return -1
         elif distance < 0:
             # if we found the node, the function returns the negative distance
-            print("Found the node we're looking for!")
+            #print("Found the node we're looking for!")
             #return -distance
             return path     #final wala for yellow line
         else:

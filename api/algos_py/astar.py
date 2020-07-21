@@ -132,6 +132,7 @@ def getNeighbours(node, grid, allowed_diagonal, dontcross):
     x = node.position[0]
     y = node.position[1]
     neighbors = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]
+    
     if (allowed_diagonal == True):
         if dontcross == True:
             if grid[y][x + 1] != "B" and grid[y + 1][x] != "B":
