@@ -84,6 +84,7 @@ var View = {
             numRows = this.numRows,
             paper = this.paper,
             rects = this.rects = [],
+            texts = this.texts = [],
             $stats = this.$stats;
 
         paper.setSize(numCols * nodeSize, numRows * nodeSize);//div paper size set
@@ -91,13 +92,15 @@ var View = {
         createRowTask = function (rowId) {
             return function (done) {
                 rects[rowId] = [];
+                texts[rowId] = [];
                 for (j = 0; j < numCols; ++j) {
                     x = j * nodeSize;
                     y = rowId * nodeSize;
-
-                    rect = paper.rect(x, y, nodeSize, nodeSize);
+                    rect = paper.rect(x, y, nodeSize, nodeSize, 8);
+                    text = paper.text(x + nodeSize / 2, y + nodeSize / 2, "");
                     rect.attr(normalStyle);
                     rects[rowId].push(rect);
+                    texts[rowId].push(text);
                 }
                 $stats.text(
                     'generating grid ' +
@@ -132,7 +135,8 @@ var View = {
                 coord[0],
                 coord[1],
                 this.nodeSize,//div setting color to attribuite in start node
-                this.nodeSize
+                this.nodeSize,
+                8
             ).attr(this.nodeStyle.normal)
                 .animate(this.nodeStyle.start, 1000);
         } else {
@@ -146,7 +150,8 @@ var View = {
                 coord[0],//div segments are taken as continuous chunks
                 coord[1],
                 this.nodeSize,
-                this.nodeSize
+                this.nodeSize,
+                8
             ).attr(this.nodeStyle.normal)
                 .animate(this.nodeStyle.end, 1000);
         } else {
@@ -200,7 +205,7 @@ var View = {
         }, this.nodeZoomEffect.duration);
     },
     setWalkableAt: function (gridX, gridY, value) {
-        var node, i, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes;
+        var node, i, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes, textsRough = this.textsRough;
         if (!blockedNodes) {
             blockedNodes = this.blockedNodes = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
@@ -209,12 +214,15 @@ var View = {
         }
         if (!roughNodes) {
             roughNodes = this.roughNodes = new Array(this.numRows);
+            textsRough = this.textsRough = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
                 roughNodes[i] = [];
+                textsRough[i] = [];
             }
         }
         var nodeBlock = blockedNodes[gridY][gridX];//div here changes
         var nodeRough = roughNodes[gridY][gridX];
+        var textRough = textsRough[gridY][gridX];
         if (nodeBlock)
             node = nodeBlock;
         if (nodeRough)
@@ -227,9 +235,13 @@ var View = {
                 this.zoomNode(node);
                 blockedNodes[gridY][gridX] = null;
                 roughNodes[gridY][gridX] = null;
-                if(nodeRough)
+                textsRough[gridY][gridX] = null;
+                text.attr({ 'text': "0" });
+                if (nodeRough) {
                     nodeRough.remove();
-                if(nodeBlock)
+                    textRough.remove();
+                }
+                if (nodeBlock)
                     nodeBlock.remove();
                 return;
             }
@@ -240,8 +252,10 @@ var View = {
                 return;
             }
             nodeRough = roughNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
+            textRough = textsRough[gridY][gridX] = this.texts[gridY][gridX].clone();
             this.colorizeNode(nodeRough, this.nodeStyle.weighted.fill);
             this.zoomNode(nodeRough);
+            textRough.attr({ 'text': "1" });
             return;
         }
         if (value == 2) {
@@ -251,6 +265,7 @@ var View = {
             nodeBlock = blockedNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
             this.colorizeNode(nodeBlock, this.nodeStyle.blocked.fill);
             this.zoomNode(nodeBlock);
+            text.attr({ 'text': "2" });
             return;
         }
     },
@@ -261,6 +276,7 @@ var View = {
             x = coord[0];
             y = coord[1];
             this.rects[y][x].attr(this.nodeStyle.normal);
+            this.texts[y][x].attr({ 'text': '' });
             this.setCoordDirty(x, y, false);
         }
     },
