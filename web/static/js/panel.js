@@ -43,9 +43,8 @@ var Panel = {
                     '.dont_cross_corners:checked').val() !== 'undefined';
 
                 /* parseInt returns NaN (which is falsy) if the string can't be parsed */
-                weight = parseInt($('#astar_section .spinner').val()) || 1;
+                weight = parseInt($('#custom_weight_section .spinner').val()) || 1;
                 weight = weight >= 1 ? weight : 1; /* if negative or 0, use 1 */
-
                 heuristic = $('input[name=astar_heuristic]:checked').val();
                 //mars project stuff div
                 query['selected_header'] = selected_header;
@@ -245,6 +244,7 @@ var Panel = {
                 // });
                 break;
         }
+
         return query;
     }
 };

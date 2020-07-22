@@ -129,16 +129,17 @@ $.extend(Controller, {
     onsearch: function (event, from, to) {
         console.log('==> search')
         var grid = this.grid,
-            query = Panel.getFinder();
+        query = Panel.getFinder();
         grid.matrix[this.startY][this.startX] = "S";
         grid.matrix[this.endY][this.endX] = "E";
         query['gridsize'] = JSON.stringify(this.gridSize);
         query['grid'] = JSON.stringify(this.grid.matrix);
         query['start'] = JSON.stringify([this.startX, this.startY]);
         query['end'] = JSON.stringify([this.endX, this.endY]);
+        console.log(query);
         var datum;
         $.ajax({
-            url: window.location.href+'api/test/',
+            url: window.location.href + 'api/test/',
             type: 'post',
             async: false,
             data: query,
@@ -147,14 +148,14 @@ $.extend(Controller, {
                 datum = data;
             }
         });
-        console.log(query['grid']);
+        // console.log(query['grid']);
         this.path = datum['path_nodes'];
         this.operations = datum['ops'];
-        console.log(this.path);
+        // console.log(this.path);
         // this.path=data['']
         this.operationCount = this.operations.length;
         this.timeSpent = datum['time'];//div change this
-        this.length=datum['length'];
+        this.length = datum['length'];
         this.loop();
         // => searching
     },
@@ -190,7 +191,7 @@ $.extend(Controller, {
             operationCount: this.operationCount,
         });
         View.drawPath(this.path);
-        console.log(this.path);
+        // console.log(this.path);
         // => finished
     },
     onclear: function (event, from, to) {
@@ -417,7 +418,13 @@ $.extend(Controller, {
             console.log('just');
             var val = this.values.matrix[gridY][gridX];
             val = (val + 1) % 3;
-            var list = [1, 2, 'B'];
+            var grayval = parseInt($('#custom_weight_section .gray_w').val()) || 1;
+            grayval = grayval > 0 ? grayval : 2;
+            var list = [];
+            list.push(1);
+            list.push(grayval);
+            list.push('B');
+            console.log(list[1]);
             this.values.matrix[gridY][gridX] = val;
             grid.matrix[gridY][gridX] = list[val];
             this.changeNode(gridX, gridY, val);
