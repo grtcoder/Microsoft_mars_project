@@ -1,7 +1,7 @@
 
+from .astar import *
 
-
-def iterative_deepening_a_star_rec(tree, heuristic, node, goal, distance, threshold):
+def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,allowed_diagonal,dont_cross,path,distance_function):
     """
     Performs DFS up to a depth where a threshold is reached (as opposed to interative-deepening DFS which stops at a fixed depth).
     Can be modified to handle graphs by keeping track of already visited nodes.
@@ -13,35 +13,54 @@ def iterative_deepening_a_star_rec(tree, heuristic, node, goal, distance, thresh
     :param threshold: Until which distance to search in this iteration.
     :return: number shortest distance to the goal node. Can be easily modified to return the path.
      """
-    print("Visiting Node " + str(node))
+    #print("Visiting Node " + str(node))
 
     if node == goal:
         # We have found the goal node we we're searching for
+       
+        current_node=node
+      # length = current_node.g
+        while current_node != first:
+            path.append(current_node.position)
+            current_node = current_node.parent
+        path.append(first.position)
         return -distance
 
-    estimate = distance + heuristic[node][goal]
+    estimate = distance +  hval(node, goal, distance_function,"ida_star")
+
     if estimate > threshold:
-        print("Breached threshold with heuristic: " + str(estimate))
+        #print("Breached threshold with heuristic: " + str(estimate))
         return estimate
 
     # ...then, for all neighboring nodes....
     min = float("inf")
-    for i in range(len(tree[node])):
-        if tree[node][i] != 0:
-            t = iterative_deepening_a_star_rec(tree, heuristic, i, goal, distance + tree[node][i], threshold)
-            if t < 0:
-                # Node found
-                return t
-            elif t < min:
-                min = t
 
-    return min
+    neighbors = getNeighbours(node, map, allowed_diagonal,
+                                  dont_cross)
 
 
+    for next in neighbors:
+        #if map[next[1]][next[0]] != 0:
+        if map[next[1]][next[0]]=='B':
+            continue
+        neighbor = Node(next, node)
+        
+        t = iterative_deepening_a_star_rec(first,map, neighbor, goal, distance + gval(node,neighbor,"ida_star",map),
+        threshold,allowed_diagonal,dont_cross,path,distance_function)
+        
+        if t < 0:
+            # Node found
+            return t
+        elif t < min:
+            min = t
+
+    return min        #returning exceeding thresholds ka minimum
 
 
 
-def iterative_deepening_a_star(tree, heuristic, start, goal):
+
+
+def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagonal,dont_cross):
     """
     Performs the iterative deepening A Star (A*) algorithm to find the shortest path from a start to a target node.
     Can be modified to handle graphs by keeping track of already visited nodes.
@@ -51,17 +70,31 @@ def iterative_deepening_a_star(tree, heuristic, start, goal):
     :param goal:      The node we're searching for.
     :return: number shortest distance to the goal node. Can be easily modified to return the path.
     """
-    threshold = heuristic[start][goal]
+
+     # Create a start node and an goal node
+    start_node = Node(start, None)
+    goal_node = Node(goal, None)
+
+
+    all_paths=[]
+
+
+    threshold = hval(start_node, goal_node, distance_function, solver="ida_star")
     while True:
-        print("Iteration with threshold: " + str(threshold))
-        distance = iterative_deepening_a_star_rec(tree, heuristic, start, goal, 0, threshold)
+        #print("Iteration with threshold: " + str(threshold))
+        path=[]
+        first=start_node
+        distance = iterative_deepening_a_star_rec(first,map, start_node, goal_node, 0, threshold,allowed_diagonal,
+        dont_cross,path,distance_function)
+        #all_paths.append(path)      #in-case of tracking recursion
         if distance == float("inf"):
             # Node not found and no more nodes to visit
             return -1
         elif distance < 0:
             # if we found the node, the function returns the negative distance
-            print("Found the node we're looking for!")
-            return -distance
+            #print("Found the node we're looking for!")
+            #return -distance
+            return path     #final wala for yellow line
         else:
             # if it hasn't found the node, it returns the (positive) next-bigger threshold
             threshold = distance
