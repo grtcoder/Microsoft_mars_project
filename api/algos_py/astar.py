@@ -259,7 +259,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
         green_nodes.append(new_green_nodes)
 
     # Return None, no path is found
-    return None, green_nodes, closed
+    return None, green_nodes, closed, 0
 
 
 # Check if a neighbor should be added to open list
