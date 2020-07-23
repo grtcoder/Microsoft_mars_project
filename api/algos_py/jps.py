@@ -1,3 +1,4 @@
+
 import math, time, heapq
 
 
@@ -266,7 +267,7 @@ def nodeNeighbours(cX, cY, parent, matrix):
     return neighbours
 
 
-def jump(cX, cY, dX, dY, matrix, goal):
+def jump(cX, cY, dX, dY, matrix, goal, new_test):
 
     nX = cX + dX
     nY = cY + dY
@@ -279,6 +280,8 @@ def jump(cX, cY, dX, dY, matrix, goal):
     oX = nX
     oY = nY
 
+    new_test.append((oX, oY))
+
     if dX != 0 and dY != 0:
         while True:
             if (
@@ -290,8 +293,8 @@ def jump(cX, cY, dX, dY, matrix, goal):
                 return (oX, oY)
 
             if (
-                jump(oX, oY, dX, 0, matrix, goal) != None
-                or jump(oX, oY, 0, dY, matrix, goal) != None
+                jump(oX, oY, dX, 0, matrix, goal, new_test) != None
+                or jump(oX, oY, 0, dY, matrix, goal, new_test) != None
             ):
                 return (oX, oY)
 
@@ -301,11 +304,13 @@ def jump(cX, cY, dX, dY, matrix, goal):
             if blocked(oX, oY, 0, 0, matrix):
                 return None
 
+            new_test.append((oX, oY))
             if dblock(oX, oY, dX, dY, matrix):
                 return None
 
             if (oX, oY) == goal:
                 return (oX, oY)
+            
     else:
         if dX != 0:
             while True:
@@ -318,13 +323,12 @@ def jump(cX, cY, dX, dY, matrix, goal):
                     return (oX, nY)
 
                 oX += dX
-
                 if blocked(oX, nY, 0, 0, matrix):
                     return None
 
                 if (oX, nY) == goal:
                     return (oX, nY)
-
+                new_test.append((oX, nY))
         else:
             while True:
                 if (
@@ -336,30 +340,31 @@ def jump(cX, cY, dX, dY, matrix, goal):
                     return (nX, oY)
 
                 oY += dY
-
                 if blocked(nX, oY, 0, 0, matrix):
                     return None
 
                 if (nX, oY) == goal:
                     return (nX, oY)
+                new_test.append((nX, oY))
 
-    return jump(nX, nY, dX, dY, matrix, goal)
+    return jump(nX, nY, dX, dY, matrix, goal, new_test)
 
 
 def identifySuccessors(cX, cY, came_from, matrix, goal):
     successors = []
     neighbours = nodeNeighbours(cX, cY, came_from.get((cX, cY), 0), matrix)
 
+
+    new_test = []
     for cell in neighbours:
         dX = cell[0] - cX
         dY = cell[1] - cY
-
-        jumpPoint = jump(cX, cY, dX, dY, matrix, goal)
-
+        
+        jumpPoint = jump(cX, cY, dX, dY, matrix, goal, new_test)
         if jumpPoint != None:
             successors.append(jumpPoint)
 
-    return successors
+    return successors, new_test
 
 
 def method(matrix, start, goal, type2, solver):
@@ -388,6 +393,7 @@ def method(matrix, start, goal, type2, solver):
 
     starttime = time.time()
 
+    operations = []
     while pqueue:
 
         current = heapq.heappop(pqueue)[1]
@@ -401,13 +407,17 @@ def method(matrix, start, goal, type2, solver):
             data = data[::-1]
             endtime = time.time()
             #print(gscore[goal])
-            return (data, round(endtime - starttime, 6), open_list, closed_list, length)
+            return (data, round(endtime - starttime, 6), open_list, closed_list, length, operations)
 
         close_set.add(current)
         closed_list.append(current)
-
-        successors = identifySuccessors(current[0], current[1], came_from, matrix, goal)
+        operations.append([[current[0], current[1]], 'closed', False])
+        successors, new_test = identifySuccessors(current[0], current[1], came_from, matrix, goal)
+        for x in new_test:
+            operations.append([[x[0], x[1]], 'tested', True])
         open_list.append(successors)
+        for x in successors:
+            operations.append([[x[0], x[1]], 'opened', False])
         for successor in successors:
             jumpPoint = successor
 
@@ -426,6 +436,6 @@ def method(matrix, start, goal, type2, solver):
                 fscore[jumpPoint] = tentative_g_score + heuristic(jumpPoint, goal, type2, solver)
                 heapq.heappush(pqueue, (fscore[jumpPoint], jumpPoint))
         endtime = time.time()
-    return (0, round(endtime - starttime, 6), open_list, closed_list, 0)
+    return (0, round(endtime - starttime, 6), open_list, closed_list, 0, operations)
 
 

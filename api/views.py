@@ -40,23 +40,20 @@ def test(request):
 
 
     elif(request.POST['selected_header'] == "jump_point_header"):
-        path_nodes, time2, green_nodes, closed_nodes, length = method(
+        path_nodes, time2, green_nodes, closed_nodes, length, operations = method(
             json.loads(request.POST['grid']), json.loads(request.POST['start']),
             json.loads(request.POST['end']), request.POST['heuristic'], request.POST['selected_header'])
         # print(len(green_nodes),len(closed_nodes))
         # print(closed_nodes)
         print(length)
-        ops = []
-        for i in range(len(green_nodes)):
-            ops.append([closed_nodes[i], 'closed', False])
-            for j in green_nodes[i]:
-                ops.append([j, 'opened', False])
-        ops.append([closed_nodes[-1], 'closed', False])
+
+        #[[x, y], string , bool]
+        print(operations)
         path_nodes.reverse()
         # print(path_nodes)
         res = {
             'path_nodes': path_nodes,
-            'ops': ops,
+            'ops': operations,
             'length': round(length, 2),
             'time': round(time2, 2)
         }         
