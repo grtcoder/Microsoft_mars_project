@@ -201,7 +201,7 @@ var View = {
         }, this.nodeZoomEffect.duration);
     },
     setWalkableAt: function (gridX, gridY, value, weight) {
-        var node, i, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes;
+        var node, i, blockedNodes = this.blockedNodes, roughNodes = this.roughNodes, textsRough = this.textsRough;
         if (!blockedNodes) {
             blockedNodes = this.blockedNodes = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
@@ -214,6 +214,7 @@ var View = {
             roughWeights = this.roughWeights = new Array(this.numRows);
             for (i = 0; i < this.numRows; ++i) {
                 roughNodes[i] = [];
+                textsRough[i] = [];
             }
         }
         console.log('greyval is' + String(weight));
@@ -232,9 +233,10 @@ var View = {
                 this.zoomNode(node);
                 blockedNodes[gridY][gridX] = null;
                 roughNodes[gridY][gridX] = null;
-                this.paper.text(coord[0] + this.nodeSize / 2, coord[1] + this.nodeSize / 2, '1').attr({ stroke: 'white', fill: 'white'});
                 if (nodeRough) {
                     nodeRough.remove();
+                    textsRough[gridY][gridX].remove();
+                    textsRough[gridY][gridX] = null;
                 }
                 if (nodeBlock)
                     nodeBlock.remove();
@@ -249,7 +251,7 @@ var View = {
             nodeRough = roughNodes[gridY][gridX] = this.rects[gridY][gridX].clone();
             this.colorizeNode(nodeRough, this.nodeStyle.weighted.fill);
             this.zoomNode(nodeRough);
-            this.paper.text(coord[0] + this.nodeSize / 2, coord[1] + this.nodeSize / 2, String(weight));
+            textsRough[gridY][gridX] = this.paper.text(coord[0] + this.nodeSize / 2, coord[1] + this.nodeSize / 2, String(weight));
             return;
         }
         if (value == 2) {
