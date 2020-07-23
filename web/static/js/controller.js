@@ -92,6 +92,7 @@ $.extend(Controller, {
     operationsPerSecond: 300,
     path: [],
     operations: [],
+    grayval: 2,
     /**
  * Asynchronous transition from `none` state to `ready` state.
  */
@@ -129,7 +130,7 @@ $.extend(Controller, {
     onsearch: function (event, from, to) {
         console.log('==> search')
         var grid = this.grid,
-        query = Panel.getFinder();
+            query = Panel.getFinder();
         grid.matrix[this.startY][this.startX] = "S";
         grid.matrix[this.endY][this.endX] = "E";
         query['gridsize'] = JSON.stringify(this.gridSize);
@@ -424,6 +425,7 @@ $.extend(Controller, {
             list.push(1);
             list.push(grayval);
             list.push('B');
+            this.grayval = grayval;
             console.log(list[1]);
             this.values.matrix[gridY][gridX] = val;
             grid.matrix[gridY][gridX] = list[val];
@@ -528,7 +530,7 @@ $.extend(Controller, {
         // console.log(gridX);
         // this.grid.matrix[gridY][gridX] = list[walkable]
         // console.log(this.grid.matrix[gridY][gridX]);
-        View.setAttributeAt(gridX, gridY, 'walkable', walkable);
+        View.setAttributeAt(gridX, gridY, 'walkable', walkable, this.grayval);
     },
     isStartPos: function (gridX, gridY) {
         return gridX === this.startX && gridY === this.startY;
