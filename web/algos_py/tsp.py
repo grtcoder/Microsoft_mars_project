@@ -19,11 +19,17 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
             path_nodes, green_nodes, closed_nodes, length = astar_search(
                 map, end_points[i], end_points[j], "euclidean", allow_diagonal,
                 1, grid_size, "tsp", dont_cross_corner)
+            path_nodes.reverse()
             dict[(end_points[i][0], end_points[i][1], end_points[j][0],
                   end_points[j][1])] = [path_nodes, length]
-            path_nodes.reverse()
+
+           
+            path_nodes1, green_nodes1, closed_nodes1, length1= astar_search(
+                map, end_points[j], end_points[i], "euclidean", allow_diagonal,
+                1, grid_size, "tsp", dont_cross_corner)
+            path_nodes1.reverse()
             dict[(end_points[j][0], end_points[j][1], end_points[i][0],
-                  end_points[i][1])] = [path_nodes, length]
+                  end_points[i][1])] = [path_nodes1, length1]
 
     end_points.remove(source)
 
@@ -37,7 +43,7 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
     for a_perm in p:
         
         cnt+=1
-        list_of_paths = []
+        
         # store current Path weight(cost)
         current_pathweight = 0
 
@@ -45,10 +51,10 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
         k = source
         for i in range(len(a_perm)):
 
-            path_nodes = dict[(k[0], k[1], a_perm[i][0],
-                               a_perm[i][1])][0]
+            # path_nodes = dict[(k[0], k[1], a_perm[i][0],
+            #                    a_perm[i][1])][0]
             length = dict[(k[0], k[1], a_perm[i][0], a_perm[i][1])][1]
-            list_of_paths.append(path_nodes)
+            #list_of_paths.append(path_nodes)
             current_pathweight += length
             k = a_perm[i]
         #current_pathweight += graph[k][s]    no return journey
@@ -84,12 +90,12 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
                 #length = dict[(k[0], k[1], a_perm[i][0], a_perm[i][1])][1]
                 print(path_nodes)
                 min_perm.append(path_nodes)
-                current_pathweight += length
+                #current_pathweight += length
                 k = a_perm[i]
 
 
 
-            print("inside_tsp",min_path)
+            
             print("inside_tsp",min_perm)
             chk=1
             break

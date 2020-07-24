@@ -457,7 +457,7 @@ $.extend(Controller, {
                 break;
             case 'changingNode':
                 console.log('changingNode');
-                this.setWalkableAt(gridX, gridY, grid.matrix[gridY][gridX]);
+                // this.setWalkableAt(gridX, gridY, grid.matrix[gridY][gridX]);
                 break;
         }
     },
