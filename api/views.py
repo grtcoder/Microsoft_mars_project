@@ -23,18 +23,19 @@ def test(request):
             
 
     if request.POST['selected_header']=="ida_header":
-        ops=[]
-        length=0
-        path_nodes = iterative_deepening_a_star(
+        
+       
+        path_nodes,all_nodes,length = iterative_deepening_a_star(
             json.loads(request.POST['grid']), json.loads(request.POST['start']),
             json.loads(request.POST['end']), request.POST['heuristic'],
             json.loads(request.POST['allowDiagonal']), bool(json.loads(request.POST['dontCrossCorners'])))
 
+        #print(path_nodes)
         path_nodes.reverse()
             # print(path_nodes)
         res = {
             'path_nodes': path_nodes,
-            'ops': ops,
+            'ops': all_nodes,
             'length': round(length, 2),
             'time': round((time.process_time() - start) * 1000, 2)
         }
