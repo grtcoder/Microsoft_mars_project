@@ -12,6 +12,7 @@ from .algos_py.tsp import *
 import json
 import time
 
+
 # Create your views here.
 def home(request):
     return render(request, 'web/home.html')
@@ -28,21 +29,26 @@ def tsp(request):
 # Create your views here.
 @api_view(('POST', ))
 def tspapi(request):
-
-    path_nodes,length = tsp(json.loads(request.POST['grid']),
-            json.loads(request.POST['start']),
-            json.loads(request.POST['endpoints']),
-            json.loads(request.POST['gridsize']),
-            json.loads(request.POST['allowDiagonal']),
-            bool(json.loads(request.POST['dontCrossCorners'])))
-
+    # print(request.POST)
+    start = time.process_time()
+    length, path_nodes = tsp_solver(
+        json.loads(request.POST['grid']), json.loads(request.POST['start']),
+        json.loads(request.POST['endpoints']),
+        json.loads(request.POST['gridsize']),
+        json.loads(request.POST['allowDiagonal']),
+        bool(json.loads(request.POST['dontCrossCorners'])))
+    print(path_nodes)
+    path_final=[]
+    for i in path_nodes:
+        for j in i:
+            path_final.append(j)
+    print(path_final)
     res = {
-            'path_nodes': path_nodes,
-            'length': round(length, 2),
-            'time': round((time.process_time() - start) * 1000, 2)
-        }
-
-    return Response({'a':'b'})
+        'path_nodes': path_final,
+        'length': round(length, 2),
+        'time': round((time.process_time() - start) * 1000, 2)
+    }
+    return Response(res)
 
 
 @api_view(('POST', ))

@@ -158,6 +158,7 @@ $.extend(Controller, {
         });
         // console.log(query['grid']);
         this.path = datum['path_nodes'];
+        console.log(this.path);
         this.operations = [];
         // console.log(this.path);
         // this.path=data['']
