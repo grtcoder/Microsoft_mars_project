@@ -8,6 +8,7 @@ from .algos_py.astar import *
 from .algos_py.jps import *
 from .algos_py.orth_jps import *
 from .algos_py.ida_star import *
+from .algos_py.tsp import *
 import json
 import time
 
@@ -27,6 +28,20 @@ def tsp(request):
 # Create your views here.
 @api_view(('POST', ))
 def tspapi(request):
+
+    path_nodes,length = tsp(json.loads(request.POST['grid']),
+            json.loads(request.POST['start']),
+            json.loads(request.POST['endpoints']),
+            json.loads(request.POST['gridsize']),
+            json.loads(request.POST['allowDiagonal']),
+            bool(json.loads(request.POST['dontCrossCorners'])))
+
+    res = {
+            'path_nodes': path_nodes,
+            'length': round(length, 2),
+            'time': round((time.process_time() - start) * 1000, 2)
+        }
+
     return Response({'a':'b'})
 
 
