@@ -1,14 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsoft Mars Project</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Home</title>
+    <meta content="" name="descriptison">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'css/animate.min.css'%}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css'%}" rel="stylesheet">
+
 </head>
 
 <body>
-    <button type="button" onclick="location.href=location.href+'common'">Single Endpoint</button>
-    <button type="button" onclick="location.href=location.href+'tsp'">Multi endpoint</button> 
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top header-transparent">
+        <div class="container">
+
+            <div class="logo float-left">
+                <h1 class="text-light"><a href="index.html"><span>Microsoft Engage</span></a></h1>
+                <!-- Uncomment below if you prefer to use an image logo -->
+                <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+            </div>
+
+        </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="d-flex justify-cntent-center align-items-center">
+        <div id="heroCarousel" class="container carousel carousel-fade" data-ride="carousel">
+
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+                <div class="carousel-container">
+                    <h2 class="animate__animated animate__fadeInDown">Welcome, to our solution to Microsoft Mars colonization problem
+                    </h2>
+                    <a onclick="location.href=location.href+'common'" class="btn-get-started animate__animated animate__fadeInUp">Single point</a>
+                    <a onclick="location.href=location.href+'tsp'" class="btn-get-started animate__animated animate__fadeInUp">Multi point</a>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+    <!-- End Hero -->
+
+
 </body>
 
 </html>
