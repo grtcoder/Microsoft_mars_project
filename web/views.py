@@ -37,12 +37,12 @@ def tspapi(request):
         json.loads(request.POST['gridsize']),
         json.loads(request.POST['allowDiagonal']),
         bool(json.loads(request.POST['dontCrossCorners'])))
-    print(path_nodes)
+    #print(path_nodes)
     path_final=[]
     for i in path_nodes:
         for j in i:
             path_final.append(j)
-    print(path_final)
+    #print(path_final) 
     res = {
         'path_nodes': path_final,
         'length': round(length, 2),

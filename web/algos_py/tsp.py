@@ -21,6 +21,7 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
                 1, grid_size, "tsp", dont_cross_corner)
             dict[(end_points[i][0], end_points[i][1], end_points[j][0],
                   end_points[j][1])] = [path_nodes, length]
+            path_nodes.reverse()
             dict[(end_points[j][0], end_points[j][1], end_points[i][0],
                   end_points[i][1])] = [path_nodes, length]
 
@@ -28,11 +29,14 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
 
     # store minimum weight Hamiltonian Cycle
     min_path = inf
-    final_path = []
+    final_cnt = inf
+    
 
     p = permutations(end_points, len(end_points))
+    cnt=0
     for a_perm in p:
-
+        
+        cnt+=1
         list_of_paths = []
         # store current Path weight(cost)
         current_pathweight = 0
@@ -52,9 +56,48 @@ def tsp_solver(map, source, end_points, grid_size, allow_diagonal,
         # update minimum
         if current_pathweight < min_path:
             min_path = current_pathweight
-            final_path = list_of_paths
+            final_cnt=cnt
 
-    return min_path, final_path
+
+    print("here")
+    print(min_path)
+    print(final_cnt)
+
+    cnt1=0
+    chk=0
+    min_perm=[] 
+    p = permutations(end_points, len(end_points))
+
+    for a_perm in p:
+       # print("inside")
+        cnt1+=1
+        print(cnt1)
+        if cnt1==final_cnt:
+            
+            k=source
+            #print("here")
+            
+            for i in range(len(a_perm)):
+
+                path_nodes = dict[(k[0], k[1], a_perm[i][0],
+                                a_perm[i][1])][0]
+                #length = dict[(k[0], k[1], a_perm[i][0], a_perm[i][1])][1]
+                print(path_nodes)
+                min_perm.append(path_nodes)
+                current_pathweight += length
+                k = a_perm[i]
+
+
+
+            print("inside_tsp",min_path)
+            print("inside_tsp",min_perm)
+            chk=1
+            break
+        if chk==1:
+            break
+
+
+    return min_path, min_perm
 
 
 # Driver Code
