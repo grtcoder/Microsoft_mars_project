@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView
 from .algos_py.astar import *
 from .algos_py.jps import *
+from .algos_py.orth_jps import *
 from .algos_py.ida_star import *
 import json
 import time
@@ -58,6 +59,26 @@ def test(request):
             'time': round(time2, 2)
         }         
 
+
+    elif(request.POST['selected_header'] == "orth_jump_point_header"):
+        path_nodes, time2, green_nodes, closed_nodes, length, operations = method2(
+            json.loads(request.POST['grid']), json.loads(request.POST['start']),
+            json.loads(request.POST['end']), request.POST['heuristic'], request.POST['selected_header'])
+        # print(len(green_nodes),len(closed_nodes))
+        # print(closed_nodes)
+        print(length)
+
+        #[[x, y], string , bool]
+        print(operations)
+        print(path_nodes)
+        path_nodes.reverse()
+        # print(path_nodes)
+        res = {
+            'path_nodes': path_nodes,
+            'ops': operations,
+            'length': round(length, 2),
+            'time': round(time2, 2)
+        }         
 
     else:
 
