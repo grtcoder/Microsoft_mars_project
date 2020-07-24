@@ -1,0 +1,42 @@
+{% extends 'web/index.html' %}
+{% load static %}
+{% block js %}
+<script type="text/javascript" src="{% static '/js/view_tsp.js'%}"></script>
+<script type="text/javascript" src="{% static '/js/controller_tsp.js'%}"></script>
+<script type="text/javascript" src="{% static '/js/panel_tsp.js'%}"></script>
+{% endblock js %}
+
+{% block content %}
+<div class="accordion">
+    <h3 id="tsp_header"><a href="#">Shortest Tour</a></h3>
+    <div id="tsp_section" class="finder_section">
+        <header class="option_header">
+        </header>
+        <!-- <div id="astar_heuristic" class="sub_options">
+            <input type="radio" name="astar_heuristic" value="manhattan" checked />
+            <label class="option_label">Manhattan</label> <br>
+            <input type="radio" name="astar_heuristic" value="euclidean" />
+            <label class="option_label">Euclidean</label> <br>
+            <input type="radio" name="astar_heuristic" value="octile" />
+            <label class="option_label">Octile</label> <br>
+            <input type="radio" name="astar_heuristic" value="chebyshev" />
+            <label class="option_label">Chebyshev</label> <br>
+        </div> -->
+        <header class="option_header">
+            <h3>Options</h3>
+        </header>
+        <div class="optional sub_options">
+            <input type="checkbox" class="allow_diagonal" checked>
+            <label class="option_label">Allow Diagonal</label> <br>
+            <!-- <input type="checkbox" class="bi-directional">
+            <label class="option_label">Bi-directional</label> <br> -->
+            <input type="checkbox" class="dont_cross_corners">
+            <label class="option_label">Don't Cross Corners</label> <br>
+            <!-- <input class="spinner" name="astar_weight" value="1">
+            <label class="option_label">Weight</label> <br> -->
+            <input class="spinner" name="time_limit" value="10">
+          <label class="option_label">Seconds limit</label> <br>
+        </div>
+    </div>
+</div>
+{% endblock content %}

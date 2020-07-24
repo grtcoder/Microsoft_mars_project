@@ -136,11 +136,18 @@ $.extend(Controller, {
         query['gridsize'] = JSON.stringify(this.gridSize);
         query['grid'] = JSON.stringify(this.grid.matrix);
         query['start'] = JSON.stringify([this.startX, this.startY]);
-        query['end'] = JSON.stringify([this.endX, this.endY]);
+        endpoints = [];
+        for (i = 0; i < this.gridSize[1]; i++) {
+            for (j = 0; j < this.gridSize[0]; j++) {
+                if (grid.matrix[j][i] == 'E')
+                    endpoints.push([i, j]);
+            }
+        }
+        query['endpoints'] = JSON.stringify(endpoints);
         console.log(query);
         var datum;
         $.ajax({
-            url: window.location.href + '/api',
+            url: window.location.href + '/tspapi',
             type: 'post',
             async: false,
             data: query,
@@ -151,10 +158,10 @@ $.extend(Controller, {
         });
         // console.log(query['grid']);
         this.path = datum['path_nodes'];
-        this.operations = datum['ops'];
+        this.operations = [];
         // console.log(this.path);
         // this.path=data['']
-        this.operationCount = this.operations.length;
+        this.operationCount = 0;
         this.timeSpent = datum['time'];//div change this
         this.length = datum['length'];
         this.loop();
@@ -418,13 +425,14 @@ $.extend(Controller, {
         if (this.can('changeNode') && !this.isStartOrEndPos(gridX, gridY)) {
             console.log('just');
             var val = this.values.matrix[gridY][gridX];
-            val = (val + 1) % 3;
+            val = (val + 1) % 4;
             var grayval = parseInt($('#custom_weight_section .gray_w').val()) || 1;
             grayval = grayval > 0 ? grayval : 2;
             var list = [];
             list.push(1);
             list.push(grayval);
             list.push('B');
+            list.push('E');
             this.grayval = grayval;
             console.log(list[1]);
             this.values.matrix[gridY][gridX] = val;
