@@ -191,7 +191,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
     # Create lists for open nodes and closed nodes
     open = []
     closed = []
-    print(solver)
+    # print(solver)
     # Create a start node and an goal node
     start_node = Node(start, None)
     goal_node = Node(end, None)

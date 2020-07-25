@@ -58,9 +58,9 @@ def tspapi(request):
 def test(request):
     start = time.process_time()
     # print(request.POST)
-    print(bool(json.loads(request.POST['dontCrossCorners'])))
+    # print(bool(json.loads(request.POST['dontCrossCorners'])))
     # print(json.loads(request.POST['end']))
-    print(request.POST['selected_header'])
+    # print(request.POST['selected_header'])
 
     if request.POST['selected_header'] == "ida_header":
 
@@ -88,10 +88,10 @@ def test(request):
             request.POST['heuristic'], request.POST['selected_header'])
         # print(len(green_nodes),len(closed_nodes))
         # print(closed_nodes)
-        print(length)
+        # print(length)
 
         #[[x, y], string , bool]
-        print(operations)
+        # print(operations)
         path_nodes.reverse()
         # print(path_nodes)
         res = {
@@ -108,11 +108,11 @@ def test(request):
             request.POST['heuristic'], request.POST['selected_header'])
         # print(len(green_nodes),len(closed_nodes))
         # print(closed_nodes)
-        print(length)
+        # print(length)
 
         #[[x, y], string , bool]
-        print(operations)
-        print(path_nodes)
+        # print(operations)
+        # print(path_nodes)
         path_nodes.reverse()
         # print(path_nodes)
         res = {
@@ -139,7 +139,7 @@ def test(request):
                 bool(json.loads(request.POST['dontCrossCorners'])))
             # print(len(green_nodes),len(closed_nodes))
             # print(closed_nodes)
-            print(length)
+            # print(length)
             ops = []
             for i in range(len(green_nodes)):
                 ops.append([closed_nodes[i].pos(), 'closed', False])

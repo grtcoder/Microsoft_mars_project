@@ -19,7 +19,7 @@ class Node:
 
     # Compare nodes
     def __eq__(self, other):
-        print(self, other)
+        # print(self, other)
         return self.position == other.position
 
     # Sort nodes
