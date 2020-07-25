@@ -128,29 +128,32 @@ def fval(node, solver, weight):
     return node.g + node.h
 
 
-def getNeighbours(node, grid, allowed_diagonal, dontcross):
+def getNeighbours(node, grid, allowed_diagonal, dontcross, grid_size):
     x = node.position[0]
     y = node.position[1]
-    neighbors = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]
-    
+    candidate_neighbors = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]
+    neighbors = []
+    for z in candidate_neighbors:
+        if is_valid(z[0], z[1], grid_size):
+            neighbors.append(z)
     if (allowed_diagonal == True):
         if dontcross == True:
-            if grid[y][x + 1] != "B" and grid[y + 1][x] != "B":
+            if is_valid(y, x+1, grid_size) and grid[y][x + 1] != "B" and  is_valid(y+1, x, grid_size) and grid[y + 1][x] != "B":
                 neighbors.append([x + 1, y + 1])
-            if grid[y][x + 1] != "B" and grid[y - 1][x] != "B":
+            if  is_valid(y, x+1, grid_size) and grid[y][x + 1] != "B" and  is_valid(y-1, x, grid_size) and grid[y - 1][x] != "B":
                 neighbors.append([x + 1, y - 1])
-            if grid[y][x - 1] != "B" and grid[y + 1][x] != "B":
+            if  is_valid(y, x-1, grid_size) and grid[y][x - 1] != "B" and  is_valid(y+1, x, grid_size) and grid[y + 1][x] != "B":
                 neighbors.append([x - 1, y + 1])
-            if grid[y][x - 1] != "B" and grid[y - 1][x] != "B":
+            if  is_valid(y, x-1, grid_size) and grid[y][x - 1] != "B" and  is_valid(y-1, x, grid_size) and grid[y - 1][x] != "B":
                 neighbors.append([x - 1, y - 1])
         else:
-            if grid[y][x + 1] != "B" or grid[y + 1][x] != "B":
+            if  is_valid(y, x+1, grid_size) and grid[y][x + 1] != "B" or  is_valid(y+1, x, grid_size) and grid[y + 1][x] != "B":
                 neighbors.append([x + 1, y + 1])
-            if grid[y][x + 1] != "B" or grid[y - 1][x] != "B":
+            if  is_valid(y, x+1, grid_size) and grid[y][x + 1] != "B" or  is_valid(y-1, x, grid_size) and grid[y - 1][x] != "B":
                 neighbors.append([x + 1, y - 1])
-            if grid[y][x - 1] != "B" or grid[y + 1][x] != "B":
+            if  is_valid(y, x-1, grid_size) and grid[y][x - 1] != "B" or  is_valid(y+1, x, grid_size) and grid[y + 1][x] != "B":
                 neighbors.append([x - 1, y + 1])
-            if grid[y][x - 1] != "B" or grid[y - 1][x] != "B":
+            if  is_valid(y, x-1, grid_size) and grid[y][x - 1] != "B" or  is_valid(y-1, x, grid_size) and grid[y - 1][x] != "B":
                 neighbors.append([x - 1, y - 1])
     return neighbors
 
