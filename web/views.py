@@ -69,7 +69,7 @@ def test(request):
             json.loads(request.POST['start']),
             json.loads(request.POST['end']), request.POST['heuristic'],
             json.loads(request.POST['allowDiagonal']),
-            bool(json.loads(request.POST['dontCrossCorners'])))
+            bool(json.loads(request.POST['dontCrossCorners'])),json.loads(request.POST['gridsize']))
 
         #print(path_nodes)
         path_nodes.reverse()

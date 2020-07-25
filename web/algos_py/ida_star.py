@@ -1,7 +1,7 @@
 
 from .astar import *
 
-def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,allowed_diagonal,dont_cross,path,distance_function,length,intm_path):
+def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,allowed_diagonal,dont_cross,path,distance_function,length,intm_path,grid_size):
     """
     Performs DFS up to a depth where a threshold is reached (as opposed to interative-deepening DFS which stops at a fixed depth).
     Can be modified to handle graphs by keeping track of already visited nodes.
@@ -36,7 +36,7 @@ def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,all
     min = float("inf")
 
     neighbors = getNeighbours(node, map, allowed_diagonal,
-                                  dont_cross)
+                                  dont_cross,grid_size)
 
     intm_path.append(node.position)
     for next in neighbors:
@@ -49,7 +49,7 @@ def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,all
         neighbor = Node(next, node)
         
         t = iterative_deepening_a_star_rec(first,map, neighbor, goal, distance + gval(node,neighbor,"ida_star",map),
-        threshold,allowed_diagonal,dont_cross,path,distance_function,length,intm_path)
+        threshold,allowed_diagonal,dont_cross,path,distance_function,length,intm_path,grid_size)
         
         if t < 0:
             # Node found
@@ -63,7 +63,7 @@ def iterative_deepening_a_star_rec(first,map,node, goal, distance, threshold,all
 
 
 
-def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagonal,dont_cross):
+def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagonal,dont_cross,grid_size):
     """
     Performs the iterative deepening A Star (A*) algorithm to find the shortest path from a start to a target node.
     Can be modified to handle graphs by keeping track of already visited nodes.
@@ -91,7 +91,7 @@ def iterative_deepening_a_star(map, start, goal,distance_function,allowed_diagon
         first=start_node
 
         distance = iterative_deepening_a_star_rec(first,map, start_node, goal_node, 0, threshold,allowed_diagonal,
-        dont_cross,path,distance_function,length,intm_path)
+        dont_cross,path,distance_function,length,intm_path,grid_size)
         for pos in intm_path:
             all_paths.append([pos,'tested',True])
         intm_path.reverse()
