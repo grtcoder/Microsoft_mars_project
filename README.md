@@ -13,5 +13,5 @@ Mohit Singhal<br>
 
 [Website Link](https://bellaciao.azurewebsites.net/)
 
-For evaluators 
+# For evaluators <br>
 The website has been hosted on a free account at microsoft azure, and is sometimes down, but it usually comes back in 15-20 min so please bear with us while evaluating.
