@@ -1,12 +1,11 @@
-{% extends 'web/index.html' %}
-{% load static %}
-{% block js %}
+{% extends 'web/index.html' %} {% load static %} {% block js %}
 <script type="text/javascript" src="{% static '/js/view_tsp.js'%}"></script>
 <script type="text/javascript" src="{% static '/js/controller_tsp.js'%}"></script>
 <script type="text/javascript" src="{% static '/js/panel_tsp.js'%}"></script>
-{% endblock js %}
-
-{% block content %}
+{% endblock js %} {% block instruction %} Click within the <span class="white">white</span> grid. <br> One on click, color becomes <span class="grey">grey</span>, which different path weights.<br> On second click, color becomes <span class="black">black</span>which
+denotes blocked node.
+<br> On another click, the node turns <span class="red">red</span>, and denotes and end point for the path. <br> Drag the <span class="green">green</span> node to set the start position. <br> Drag the <span class="red">red</span> node to set the end position.
+<br> Choose an algorithm from the right-hand panel. <br> Click Start Search in the lower-right corner to start the animation. {% endblock instruction %} {% block content %}
 <div class="accordion">
     <h3 id="tsp_header"><a href="#">Shortest Tour</a></h3>
     <div id="tsp_section" class="finder_section">
@@ -35,7 +34,7 @@
             <!-- <input class="spinner" name="astar_weight" value="1">
             <label class="option_label">Weight</label> <br> -->
             <input class="spinner" name="time_limit" value="10">
-          <label class="option_label">Seconds limit</label> <br>
+            <label class="option_label">Seconds limit</label> <br>
         </div>
     </div>
 </div>

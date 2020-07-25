@@ -11,6 +11,9 @@ from .algos_py.ida_star import *
 from .algos_py.tsp import *
 import json
 import time
+from .algos_py.biastar import biastar_search
+
+
 
 
 # Create your views here.
@@ -55,10 +58,10 @@ def tspapi(request):
 @api_view(('POST', ))
 def test(request):
     start = time.process_time()
-    print(request.POST)
-    print(bool(json.loads(request.POST['dontCrossCorners'])))
+    # print(request.POST)
+    # print(bool(json.loads(request.POST['dontCrossCorners'])))
     # print(json.loads(request.POST['end']))
-    print(request.POST['selected_header'])
+    # print(request.POST['selected_header'])
 
     if request.POST['selected_header'] == "ida_header":
 
@@ -67,7 +70,7 @@ def test(request):
             json.loads(request.POST['start']),
             json.loads(request.POST['end']), request.POST['heuristic'],
             json.loads(request.POST['allowDiagonal']),
-            bool(json.loads(request.POST['dontCrossCorners'])))
+            bool(json.loads(request.POST['dontCrossCorners'])),json.loads(request.POST['gridsize']))
 
         #print(path_nodes)
         path_nodes.reverse()
@@ -93,7 +96,7 @@ def test(request):
             }
 
 
-    elif (request.POST['selected_header'] == "jump_point_header"):
+    elif (request.POST['selected_header'] == "jump_point_header" or request.POST['selected_header'] == "orth_jump_point_header"):
         path_nodes, time2, green_nodes, closed_nodes, length, operations = method(
             json.loads(request.POST['grid']),
             json.loads(request.POST['start']), json.loads(request.POST['end']),
@@ -129,11 +132,11 @@ def test(request):
             request.POST['heuristic'], request.POST['selected_header'])
         # print(len(green_nodes),len(closed_nodes))
         # print(closed_nodes)
-        print(length)
+        # print(length)
 
         #[[x, y], string , bool]
-        print(operations)
-        print(path_nodes)
+        # print(operations)
+        # print(path_nodes)
         path_nodes.reverse()
         # print(path_nodes)
         if json.loads(request.POST['trackRecursion'])==False:
@@ -158,30 +161,55 @@ def test(request):
 
     else:
 
-        path_nodes, green_nodes, closed_nodes, length = astar_search(
-            json.loads(request.POST['grid']),
-            json.loads(request.POST['start']),
-            json.loads(request.POST['end']), request.POST['heuristic'],
-            json.loads(request.POST['allowDiagonal']),
-            int(request.POST['weight']), json.loads(request.POST['gridsize']),
-            request.POST['selected_header'],
-            bool(json.loads(request.POST['dontCrossCorners'])))
-        # print(len(green_nodes),len(closed_nodes))
-        # print(closed_nodes)
-        print(length)
-        ops = []
-        for i in range(len(green_nodes)):
-            ops.append([closed_nodes[i].pos(), 'closed', False])
-            for j in green_nodes[i]:
-                ops.append([j.pos(), 'opened', False])
-        ops.append([closed_nodes[-1].pos(), 'closed', False])
-        path_nodes.reverse()
-        # print(path_nodes)
-        res = {
-            'path_nodes': path_nodes,
-            'ops': ops,
-            'length': round(length, 2),
-            'time': round((time.process_time() - start) * 1000, 2)
-        }
+
+
+        if(json.loads(request.POST['biDirectional']) == False):
+
+
+            path_nodes, green_nodes, closed_nodes, length = astar_search(
+                json.loads(request.POST['grid']),
+                json.loads(request.POST['start']),
+                json.loads(request.POST['end']), request.POST['heuristic'],
+                json.loads(request.POST['allowDiagonal']),
+                int(request.POST['weight']), json.loads(request.POST['gridsize']),
+                request.POST['selected_header'],
+                bool(json.loads(request.POST['dontCrossCorners'])))
+            # print(len(green_nodes),len(closed_nodes))
+            # print(closed_nodes)
+            # print(length)
+            ops = []
+            for i in range(len(green_nodes)):
+                ops.append([closed_nodes[i].pos(), 'closed', False])
+                for j in green_nodes[i]:
+                    ops.append([j.pos(), 'opened', False])
+            ops.append([closed_nodes[-1].pos(), 'closed', False])
+            path_nodes.reverse()
+            # print(path_nodes)
+            res = {
+                'path_nodes': path_nodes,
+                'ops': ops,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
+
+        else:
+            path_nodes, operations, length = biastar_search(
+                json.loads(request.POST['grid']),
+                json.loads(request.POST['start']),
+                json.loads(request.POST['end']), request.POST['heuristic'],
+                json.loads(request.POST['allowDiagonal']),
+                int(request.POST['weight']), json.loads(request.POST['gridsize']),
+                request.POST['selected_header'],
+                bool(json.loads(request.POST['dontCrossCorners'])))
+            # print(len(green_nodes),len(closed_nodes))
+            # print(closed_nodes)
+            path_nodes.reverse()
+            # print(path_nodes)
+            res = {
+                'path_nodes': path_nodes,
+                'ops': operations,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
 
     return Response(res)

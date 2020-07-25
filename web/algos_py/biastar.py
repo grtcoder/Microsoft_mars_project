@@ -15,9 +15,11 @@ class Node:
         self.g = 0  # Distance to start node
         self.h = 0  # Distance to goal node
         self.f = 0  # Total cost
+        self.opened = ""
 
     # Compare nodes
     def __eq__(self, other):
+        # print(self, other)
         return self.position == other.position
 
     # Sort nodes
@@ -128,6 +130,8 @@ def fval(node, solver, weight):
     return node.g + node.h
 
 
+
+
 def getNeighbours(node, grid, allowed_diagonal, dontcross, grid_size):
     x = node.position[0]
     y = node.position[1]
@@ -186,52 +190,122 @@ def is_valid(x, y, grid_size):
 
 
 # A* search
-def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
+def biastar_search(map, start, end, distance_function, allowed_diagonal, weight,
                  grid_size, solver, dontcross):
     # Create lists for open nodes and closed nodes
-    open = []
+    start_open = []
+    end_open = []
     closed = []
-    # print(solver)
     # Create a start node and an goal node
     start_node = Node(start, None)
     goal_node = Node(end, None)
-    green_nodes = []
+    start_node.opened = "start"
+    goal_node.opened = "end"
     # Add the start node
-    open.append(start_node)
-
+    start_open.append(start_node)
+    end_open.append(goal_node)
+    operations = []
+    operations.append([[start_node.position[0], start_node.position[1]], "opened", False])
+    operations.append([[goal_node.position[0], goal_node.position[1]], "opened", False])
     # Loop until the open list is empty
-    while len(open) > 0:
+    while len(start_open) > 0 and len(end_open) > 0:
 
         # Sort the open list to get the node with the lowest cost first
-        open.sort()
+        start_open.sort()
+        end_open.sort()
         # Get the node with the lowest cost
-        current_node = open.pop(0)
+        current_node = start_open.pop(0)
         if (current_node in closed):
             continue
         # Add the current node to the closed list
         closed.append(current_node)
         # print(current_node)
-
+        operations.append([[current_node.position[0], current_node.position[1]], "closed", False])
         # Check if we have reached the goal, return the path
-        if current_node == goal_node:
-            path = []
-            length = current_node.g
-            while current_node != start_node:
-                path.append(current_node.position)
-                current_node = current_node.parent
-            path.append(start_node.position)
-            # Return reversed path
-            return path, green_nodes, closed, length
 
         # Unzip the current node position
         [x, y] = (current_node.position[0], current_node.position[1])
 
         # Get neighbors
         neighbors = getNeighbours(current_node, map, allowed_diagonal,
-                                  dontcross,grid_size)
+                                  dontcross, grid_size)
 
         # Loop neighbors
-        new_green_nodes = []
+    
+        for next in neighbors:
+
+            # Get value from map
+
+            # check if the node is inside in a grid
+            if (not is_valid(next[0], next[1], grid_size)):
+                continue
+            map_value = map[next[1]][next[0]]
+            # Check if the node is a wall
+            if (map_value == 'B'):
+                continue
+            
+
+            # Create a neighbor node
+            neighbor = Node(next, current_node)
+
+            if(neighbor in closed):
+                continue
+
+
+            if neighbor in end_open:
+                for x in end_open:
+                    if(x == neighbor):
+                        neighbor = x
+                        break
+                path = []
+                length = neighbor.g + current_node.g + distance_euclidean(neighbor, current_node)
+                while neighbor != goal_node:
+                    path.append(neighbor.position)
+                    neighbor = neighbor.parent
+                path.append(goal_node.position)
+                path2 = []
+                path.reverse()
+                for x in path:
+                    path2.append(x)
+                while current_node != start_node:
+                    path2.append(current_node.position)
+                    current_node = current_node.parent
+                path2.append(start_node.position)
+            # Return reversed path
+                return path2, operations, length
+
+            # Check if the neighbor is in the closed list
+
+            neighbor.g = gval(current_node, neighbor, solver, map)
+            neighbor.h = hval(neighbor, goal_node, distance_function, solver)
+            neighbor.f = fval(neighbor, solver, weight)
+            neighbor.opened = "start"
+            # Check if neighbor is in open list and if it has a lower f value
+            if (add_to_open(start_open, neighbor) == True):
+                start_open.append(neighbor)
+                operations.append([[neighbor.position[0], neighbor.position[1]], "opened", False])
+
+
+
+
+        current_node = end_open.pop(0)
+        if (current_node in closed):
+            continue
+        # Add the current node to the closed list
+        closed.append(current_node)
+        # print(current_node)
+        operations.append([[current_node.position[0],current_node.position[1]], "closed", False])
+        # Check if we have reached the goal, return the path
+
+        # Unzip the current node position
+        [x, y] = (current_node.position[0], current_node.position[1])
+
+        # Get neighbors
+        neighbors = getNeighbours(current_node, map, allowed_diagonal,
+                                  dontcross, grid_size)
+
+        # Loop neighbors
+    
         for next in neighbors:
 
             # Get value from map
@@ -248,22 +322,48 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
             neighbor = Node(next, current_node)
 
             # Check if the neighbor is in the closed list
+            
+
             if (neighbor in closed):
                 continue
 
+                
+
+            if neighbor in start_open:
+                for x in start_open:
+                    if(x == neighbor):
+                        neighbor = x
+                        break
+                path = []
+                length = neighbor.g + current_node.g + distance_euclidean(neighbor, current_node)
+                while neighbor != start_node:
+                    path.append(neighbor.position)
+                    neighbor = neighbor.parent
+                path.append(start_node.position)
+                path2 = []
+                path.reverse()
+                for x in path:
+                    path2.append(x)
+                while current_node != goal_node:
+                    path2.append(current_node.position)
+                    current_node = current_node.parent
+                path2.append(goal_node.position)
+            # Return reversed path
+                return path2, operations, length
+
+            
             neighbor.g = gval(current_node, neighbor, solver, map)
-            neighbor.h = hval(neighbor, goal_node, distance_function, solver)
+            neighbor.h = hval(neighbor, start_node, distance_function, solver)
             neighbor.f = fval(neighbor, solver, weight)
-
+            neighbor.opened = "end"
             # Check if neighbor is in open list and if it has a lower f value
-            if (add_to_open(open, neighbor) == True):
-                open.append(neighbor)
-                new_green_nodes.append(neighbor)
-
-        green_nodes.append(new_green_nodes)
+            if (add_to_open(end_open, neighbor) == True):
+                end_open.append(neighbor)
+                operations.append([[neighbor.position[0], neighbor.position[1]], "opened", False])
+                
 
     # Return None, no path is found
-    return None, green_nodes, closed, 0
+    return None, operations,  0
 
 
 # Check if a neighbor should be added to open list
