@@ -31,6 +31,7 @@ def tsp(request):
 def tspapi(request):
     # print(request.POST)
     start = time.process_time()
+    #print(request.POST)
     length, path_nodes = tsp_solver(
         json.loads(request.POST['grid']), json.loads(request.POST['start']),
         json.loads(request.POST['endpoints']),
@@ -70,13 +71,27 @@ def test(request):
 
         #print(path_nodes)
         path_nodes.reverse()
-        # print(path_nodes)
-        res = {
-            'path_nodes': path_nodes,
-            'ops': all_nodes,
-            'length': round(length, 2),
-            'time': round((time.process_time() - start) * 1000, 2)
-        }
+        print(json.loads(request.POST['trackRecursion']))
+        if json.loads(request.POST['trackRecursion'])==False:
+            
+            # print(path_nodes)
+            empty_list=[]
+            res = {
+                'path_nodes': path_nodes,
+                'ops': empty_list,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
+        else:
+            # print(path_nodes)
+            
+            res = {
+                'path_nodes': path_nodes,
+                'ops': all_nodes,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
+
 
     elif (request.POST['selected_header'] == "jump_point_header"):
         path_nodes, time2, green_nodes, closed_nodes, length, operations = method(
@@ -85,18 +100,27 @@ def test(request):
             request.POST['heuristic'], request.POST['selected_header'])
         # print(len(green_nodes),len(closed_nodes))
         # print(closed_nodes)
-        print(length)
-
-        #[[x, y], string , bool]
-        print(operations)
-        path_nodes.reverse()
+        
         # print(path_nodes)
-        res = {
-            'path_nodes': path_nodes,
-            'ops': operations,
-            'length': round(length, 2),
-            'time': round(time2, 2)
-        }
+        if json.loads(request.POST['trackRecursion'])==False:
+            
+            # print(path_nodes)
+            empty_list=[]
+            res = {
+                'path_nodes': path_nodes,
+                'ops': empty_list,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
+        else:
+            # print(path_nodes)
+            
+            res = {
+                'path_nodes': path_nodes,
+                'ops': operations,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
 
     elif (request.POST['selected_header'] == "orth_jump_point_header"):
         path_nodes, time2, green_nodes, closed_nodes, length, operations = method2(
@@ -112,12 +136,25 @@ def test(request):
         print(path_nodes)
         path_nodes.reverse()
         # print(path_nodes)
-        res = {
-            'path_nodes': path_nodes,
-            'ops': operations,
-            'length': round(length, 2),
-            'time': round(time2, 2)
-        }
+        if json.loads(request.POST['trackRecursion'])==False:
+            
+            # print(path_nodes)
+            empty_list=[]
+            res = {
+                'path_nodes': path_nodes,
+                'ops': empty_list,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
+        else:
+            # print(path_nodes)
+            
+            res = {
+                'path_nodes': path_nodes,
+                'ops': operations,
+                'length': round(length, 2),
+                'time': round((time.process_time() - start) * 1000, 2)
+            }
 
     else:
 
