@@ -228,7 +228,7 @@ def astar_search(map, start, end, distance_function, allowed_diagonal, weight,
 
         # Get neighbors
         neighbors = getNeighbours(current_node, map, allowed_diagonal,
-                                  dontcross)
+                                  dontcross,grid_size)
 
         # Loop neighbors
         new_green_nodes = []

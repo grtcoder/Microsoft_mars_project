@@ -57,7 +57,7 @@ def tspapi(request):
 @api_view(('POST', ))
 def test(request):
     start = time.process_time()
-    print(request.POST)
+    # print(request.POST)
     print(bool(json.loads(request.POST['dontCrossCorners'])))
     # print(json.loads(request.POST['end']))
     print(request.POST['selected_header'])
