@@ -6,5 +6,9 @@ To run code run the command :- <br>
 pip install -r requirements.txt
 python manage.py runserver
 ```
+Team Members :- <br>
+Divyanshu Mathpal<br>
+Harshit Sakhuja<br>
+Mohit Singhal<br>
 
 [Website Link](https://bellaciao.azurewebsites.net/)
